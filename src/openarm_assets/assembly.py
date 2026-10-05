@@ -22,6 +22,14 @@ Side = Literal["left", "right"]
 # negative, just to accept an already-settled pose that's a hair past zero.
 JOINT4_LOWER_LIMIT_MARGIN_RAD = -0.05
 
+# The upstream `motor_finger` default class intends every finger actuator to be
+# a position servo with kp=100 (ctrl = target finger position in metres), and the
+# right arm's fingers are declared that way. The left arm's fingers are declared
+# as <motor> instead, which resets the gain to 1 and drops the position feedback:
+# they take a raw force, so commanding 0.044 only applies 0.044 N. This restores
+# the intended behaviour without editing the vendored XML.
+FINGER_KP = 100.0
+
 # Default source model and the decorated output this module produces.
 _MODEL_DIR = MODELS_DIR / "openarm"
 _DEFAULT_SRC = _MODEL_DIR / "vendor" / "openarm_bimanual.xml"
@@ -40,6 +48,7 @@ _SIDES = {
         "left_finger_body": "openarm_left_left_finger",
         "right_finger_body": "openarm_left_right_finger",
         "joint4": "openarm_left_joint4",
+        "finger_actuators": ["left_finger1_ctrl", "left_finger2_ctrl"],
     },
     "right": {
         "ee_site_name": "openarm_right_ee_site",
@@ -48,6 +57,7 @@ _SIDES = {
         "left_finger_body": "openarm_right_left_finger",
         "right_finger_body": "openarm_right_right_finger",
         "joint4": "openarm_right_joint4",
+        "finger_actuators": ["right_finger1_ctrl", "right_finger2_ctrl"],
     }
 }
 
@@ -124,6 +134,24 @@ def widen_joint4_lower_limit(spec: mujoco.MjSpec, joint4_name: str) -> None:
     joint = spec.joint(joint4_name)
     joint.range[0] = JOINT4_LOWER_LIMIT_MARGIN_RAD
 
+def make_finger_actuators_position(spec: mujoco.MjSpec, actuator_names: list[str], kp: float = FINGER_KP) -> None:
+    """Make the named finger actuators position servos (ctrl = target position, m).
+
+    Sets a fixed gain of `kp` and an affine bias of `-kp * q`, which is exactly
+    what MuJoCo's <position> shortcut expands to. Already-position actuators
+    (the right arm's) are left effectively unchanged, so this is idempotent.
+    """
+    for name in actuator_names:
+        actuator = spec.actuator(name)
+        if actuator is None:
+            raise RuntimeError(f"No actuator named {name!r} in this spec")
+        actuator.gaintype = mujoco.mjtGain.mjGAIN_FIXED
+        actuator.biastype = mujoco.mjtBias.mjBIAS_AFFINE
+        actuator.gainprm[0] = kp
+        actuator.biasprm[0] = 0.0
+        actuator.biasprm[1] = -kp
+        actuator.biasprm[2] = 0.0
+
 """ Build """
 
 def build_openarm(
@@ -141,12 +169,13 @@ def build_openarm(
         add_gravcomp(spec, side["base_body"])
         add_finger_exclude(spec, side["left_finger_body"], side["right_finger_body"])
 
-    # Both arms' joints are always present in the loaded scene regardless of
-    # which side(s) get decorated above, so the limit margin and keyframe
-    # cover joint4 on both -- not just `sides` -- to keep every output out
-    # of that singular pose.
+    # Both arms' joints and actuators are always present in the loaded scene
+    # regardless of which side(s) get decorated above, so the limit margin,
+    # finger actuator fix and keyframe cover both arms -- not just `sides` --
+    # to keep every output out of that singular pose and consistent across arms.
     for s in _SIDES.values():
         widen_joint4_lower_limit(spec, s["joint4"])
+        make_finger_actuators_position(spec, s["finger_actuators"])
     add_ready_keyframe(spec, [s["joint4"] for s in _SIDES.values()])
 
     return spec

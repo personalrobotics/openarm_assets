@@ -40,9 +40,9 @@ openarm_assets = [
 
 
 [project.urls]
-Homepage = "https://github.com/ericjgoossen/openarm"
-Repository = "https://github.com/ericjgoossen/openarm"
-Issues = "https://github.com/ericjgoossen/openarm/issues"
+Homepage = "https://github.com/ericjgoossen/openarm_assets"
+Repository = "https://github.com/ericjgoossen/openarm_assets"
+Issues = "https://github.com/ericjgoossen/openarm_assets/issues"
 
 
 [tool.ruff]

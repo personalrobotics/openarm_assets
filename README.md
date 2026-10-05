@@ -82,10 +82,12 @@ Arm actuators are torque motors: `ctrl` is torque in N·m, clamped to the force 
 |----------|-------|-------------|
 | `left_joint1_ctrl` ... `left_joint7_ctrl` | torque, see above | Left arm joints 1-7 |
 | `right_joint1_ctrl` ... `right_joint7_ctrl` | torque, see above | Right arm joints 1-7 |
-| `left_finger1_ctrl`, `left_finger2_ctrl` | 0-0.044 | Left gripper fingers (m, 0 = closed) |
-| `right_finger1_ctrl`, `right_finger2_ctrl` | 0-0.044 | Right gripper fingers (m, 0 = closed) |
+| `left_finger1_ctrl`, `left_finger2_ctrl` | 0-0.044 | Left gripper fingers: target position in m (0 = closed, 0.044 = open) |
+| `right_finger1_ctrl`, `right_finger2_ctrl` | 0-0.044 | Right gripper fingers: target position in m (0 = closed, 0.044 = open) |
 
-> **Note on grippers:** in the upstream v1 XML, the right finger actuators are position servos, while the left finger actuators are declared as `motor` elements. Commanding 0.044 on every finger therefore drives the right fingers to about 0.044 m but leaves the left fingers at about 0.019 m. If you need symmetric gripper control, account for this in your controller or patch the left actuators.
+Finger actuators are position servos (`kp = 100`, force limit ±333 N), and a positive finger value opens the gripper: with both fingers at 0 the collision meshes just touch (about 3.5 mm of overlap), and at 0.044 they are about 85 mm apart.
+
+> **Note on the vendored finger actuators:** in the upstream v1 XML the left fingers are declared as `<motor>` while the right fingers are `<position>`, so the left ones would take a raw force instead of a target position. The assembly step converts them (see [Assembly](#assembly)), so the **generated** models behave identically on both arms. The undecorated models in `vendor/` are unmodified upstream and still have the mismatch.
 
 You can list every actuator and its force limits from the loaded model:
 
@@ -133,7 +135,7 @@ get_model_path()                       # vendored single-arm openarm.xml (undeco
 
 | Model | Description |
 |-------|-------------|
-| `openarm_bimanual_decorated.xml` | Both arms decorated: EE sites, gravity compensation, finger-finger collision exclusion, `ready` keyframe |
+| `openarm_bimanual_decorated.xml` | Both arms decorated: EE sites, gravity compensation, finger-finger collision exclusion, matching finger actuators, `ready` keyframe |
 | `openarm_left_decorated.xml` | Same, applied to the left arm only |
 | `openarm_right_decorated.xml` | Same, applied to the right arm only |
 
@@ -167,6 +169,7 @@ scene = mujoco.MjModel.from_xml_path(str(get_model_path().parent / "scene.xml"))
 - gravity compensation on each arm's kinematic subtree
 - a collision exclusion between each gripper's two fingers
 - a wider `joint4` lower limit
+- position-servo finger actuators on both arms (fixes the left arm's `<motor>` fingers)
 - a `ready` keyframe
 
 ### Command Line
