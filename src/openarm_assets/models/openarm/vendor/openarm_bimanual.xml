@@ -49,7 +49,7 @@ limitations under the License.
     </default>
   </default>
 
-  <compiler angle="radian" meshdir="meshes" />
+  <compiler angle="radian" meshdir="../meshes" />
 
   <asset>
     <material name="default_material" rgba="0.7 0.7 0.7 1" />

@@ -63,11 +63,32 @@ def add_ee_site(spec: mujoco.MjSpec, tcp_body: str, site_name: str) -> None:
     site.name = site_name
     site.pos = [0.0, 0.0, 0.0]
 
-def add_gravcomp(spec: mujoco.MjSpec, root_body: str) -> None:
-    """Enable gravity compensation on the arm's kinematic subtree."""
-    from mj_manipulator.arm import add_subtree_gravcomp
+def add_gravcomp(spec: mujoco.MjSpec, root_body: str) -> int:
+    """Enable gravity compensation on `root_body` and all of its descendants.
 
-    add_subtree_gravcomp(spec, root_body)
+    Must run before `spec.compile()`: MuJoCo optimizes gravcomp away at compile
+    time if every body has gravcomp=0, and runtime writes to
+    `model.body_gravcomp` are silently ignored.
+
+    Adapted from `mj_manipulator.arm.add_subtree_gravcomp` (MIT,
+    github.com/personalrobotics/mj_manipulator), inlined here so this package
+    doesn't need mj_manipulator and its planning dependencies just for this.
+
+    Returns the number of bodies that had gravcomp set.
+    """
+    root = spec.body(root_body)
+    if root is None:
+        available = [b.name for b in spec.worldbody.bodies if b.name]
+        raise ValueError(f"No body named {root_body!r} in this spec. Top-level worldbody children: {available}")
+
+    count = 0
+    stack = [root]
+    while stack:
+        body = stack.pop()
+        body.gravcomp = 1.0
+        count += 1
+        stack.extend(body.bodies)
+    return count
 
 def add_finger_exclude(spec: mujoco.MjSpec, left_finger: str, right_finger: str) -> None:
     """Exclude finger-finger self-collision at the closed position."""
@@ -136,11 +157,11 @@ def build_openarm_bimanual(src: Path | str = _DEFAULT_SRC) -> mujoco.MjSpec:
 
 def build_openarm_left(src: Path | str = _DEFAULT_SRC) -> mujoco.MjSpec:
     """Decorate only the left arm."""
-    return build_openarm(src, sides=("left"))
+    return build_openarm(src, sides=("left",))
 
 def build_openarm_right(src: Path | str = _DEFAULT_SRC) -> mujoco.MjSpec:
     """Decorate only the right arm."""
-    return build_openarm(src, sides=("right"))
+    return build_openarm(src, sides=("right",))
 
 """ CLI """
 

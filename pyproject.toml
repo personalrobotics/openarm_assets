@@ -22,14 +22,6 @@ dependencies = [
 ]
 
 
-[project.optional-dependencies]
-assembly = [
-    "mj_manipulator",
-]
-
-[tool.uv.sources]
-mj_manipulator = { workspace = true }
-
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -43,6 +35,7 @@ openarm_assets = [
     "models/**/*.png",
     "models/**/*.mtl",
     "models/**/README.md",
+    "models/**/LICENSE",
 ]
 
 
