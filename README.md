@@ -52,6 +52,25 @@ Visual meshes are in geom group 2 and collision meshes are in geom group 3. In t
 - Enable **Group Enable > Geom groups > Geom 3** (and **Rendering > Model Elements > Convex Hull**) to show collision geometry
 - Deselect **Geom 2** to hide the visual meshes
 
+### Collision Viewer
+
+An interactive collision viewer is available to visualize collision geometry and contact detection:
+```bash
+uv run python -u examples/view_collisions.py                # bimanual (default)
+uv run python -u examples/view_collisions.py --sides left   # left/right/bimanual generated model
+```
+
+- Use joint sliders to move the robot (Tab to show/hide control panel)
+- Colliding bodies turn **red**, and each new set of contacts is printed to the terminal
+- Press `3` to toggle collision geometry and `2` to toggle visual geometry
+- Press `C` to toggle contact point visualization
+- Press `Backspace` to reset (or `R` to return to the `ready` keyframe if using the non-blocking viewer)
+- Press `P` to list every collision-enabled geom, and `V` to print the camera parameters (non-blocking viewer only)
+
+The viewer turns off gravity and steps the physics so the actuator sliders work. Contact forces are simulated too, so a colliding arm gets pushed back rather than held in the penetrating pose.
+
+> **Note on macOS:** The viewer automatically falls back to blocking mode when using uv's Python. For non-blocking mode with `launch_passive`, you need a "framework" Python build (e.g., from Homebrew or python.org) and can run: `mjpython examples/view_collisions.py`
+
 ## Robot Configuration
 
 The OpenArm model consists of:
@@ -214,6 +233,9 @@ These functions return a `mujoco.MjSpec`, so you can keep editing the model (add
 ```bash
 uv sync --dev
 
+# Test
+uv run pytest tests/ -v
+
 # Lint
 uv run ruff check .
 uv run ruff format .
@@ -230,4 +252,4 @@ OpenArm is developed by [Enactic, Inc.](https://github.com/enactic) See the [Ope
 - Vendored OpenArm assets (`src/openarm_assets/models/openarm/`): Apache License 2.0, Copyright 2025 Enactic, Inc. See [`src/openarm_assets/models/openarm/LICENSE`](src/openarm_assets/models/openarm/LICENSE).
 - Everything else, including the packaging and assembly code (`src/openarm_assets/*.py`): MIT. See [`LICENSE`](LICENSE).
 
-`add_gravcomp` in `assembly.py` is adapted from `mj_manipulator.arm.add_subtree_gravcomp` (MIT).
+`add_gravcomp` in `assembly.py` is adapted from `mj_manipulator.arm.add_subtree_gravcomp` (MIT). `examples/view_collisions.py` is adapted from [geodude_assets](https://github.com/personalrobotics/geodude_assets) (MIT).
