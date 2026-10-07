@@ -10,3 +10,6 @@ dist/
 .venv/
 
 COLCON_IGNORE
+
+# Editor
+.vscode/
