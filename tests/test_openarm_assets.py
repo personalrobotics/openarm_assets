@@ -146,8 +146,14 @@ class TestAssembly:
             site = name2id(model, mujoco.mjtObj.mjOBJ_SITE, f"openarm_{arm}_ee_site")
             assert (site != -1) == (arm in decorated_arms(sides)), f"{arm} ee_site"
 
-    def test_gravcomp_only_on_decorated_arms(self, generated):
-        sides, model = generated
+    def test_generated_models_have_no_gravcomp(self, generated):
+        """Gravity compensation is opt-in: the generated models leave gravity for the controller to cancel."""
+        _, model = generated
+        assert not model.body_gravcomp.any()
+
+    @pytest.mark.parametrize("sides", ["bimanual", "left", "right"])
+    def test_gravcomp_only_on_decorated_arms(self, sides):
+        model = build_openarm(sides=tuple(decorated_arms(sides)), gravcomp=True).compile()
         for arm in ARMS:
             link1 = name2id(model, mujoco.mjtObj.mjOBJ_BODY, f"openarm_{arm}_link1")
             expected = 1.0 if arm in decorated_arms(sides) else 0.0

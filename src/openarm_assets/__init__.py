@@ -51,3 +51,4 @@ def get_generated_model_path(sides: GeneratedSide = "bimanual", name: str = "ope
         )
 
     return xml_path
+

@@ -2,13 +2,13 @@
 
 MuJoCo models for the bimanual [OpenArm](https://github.com/enactic/openarm) robot: two 7-DOF humanoid arms with parallel-jaw grippers on a shared body.
 
-The base models are vendored from [enactic/openarm_mujoco](https://github.com/enactic/openarm_mujoco) (`v1/` at commit [`5c6e1b4`](https://github.com/enactic/openarm_mujoco/commit/5c6e1b4c71cbe27c6a4b58c7f198f080449e1b9c)). This package adds Python helpers for locating them, plus an assembly step that decorates them for use with planners and controllers (end-effector sites, gravity compensation, a "ready" keyframe).
+The base models are vendored from [enactic/openarm_mujoco](https://github.com/enactic/openarm_mujoco) (`v1/` at commit [`5c6e1b4`](https://github.com/enactic/openarm_mujoco/commit/5c6e1b4c71cbe27c6a4b58c7f198f080449e1b9c)). This package adds Python helpers for locating them, plus an assembly step that decorates them for use with planners and controllers (end-effector sites, a "ready" keyframe, and the names gafro reads: kinematic chains, task spaces, control groups).
 
 ## Installation
 
 From source:
 ```bash
-git clone https://github.com/ericjgoossen/openarm_assets.git
+git clone https://github.com/personalrobotics/openarm_assets.git
 cd openarm_assets
 uv sync
 ```
@@ -154,11 +154,11 @@ get_model_path()                       # vendored single-arm openarm.xml (undeco
 
 | Model | Description |
 |-------|-------------|
-| `openarm_bimanual_decorated.xml` | Both arms decorated: EE sites, gravity compensation, finger-finger collision exclusion, matching finger actuators, `ready` keyframe |
+| `openarm_bimanual_decorated.xml` | Both arms decorated: EE sites, finger-finger collision exclusion, matching finger actuators, `ready` keyframe, gafro chains / task spaces / control groups |
 | `openarm_left_decorated.xml` | Same, applied to the left arm only |
 | `openarm_right_decorated.xml` | Same, applied to the right arm only |
 
-All three contain both arms (18 DOF). The `left` and `right` variants differ only in which arm receives the decorations. The generated files are committed, so you don't need to run the assembly step to use them.
+All three contain both arms (18 DOF). The `left` and `right` variants differ only in which arm receives the decorations. The generated files are committed, so you don't need to run the assembly step to use them. They load `meshes/` through `generated/assets`, a link the assembly step creates: gafro drops an MJCF `meshdir` on load and looks for `assets` beside the model file.
 
 **Vendored (undecorated) models** in `models/openarm/vendor/`, from upstream with one change (see [Provenance](#provenance)):
 
@@ -185,7 +185,8 @@ scene = mujoco.MjModel.from_xml_path(str(get_model_path().parent / "scene.xml"))
 `openarm_assets.assembly` takes a vendored model and applies the decorations that planners and controllers typically need:
 
 - an end-effector site at each hand TCP
-- gravity compensation on each arm's kinematic subtree
+- the names [gafro](https://github.com/personalrobotics/gafro) reads from an MJCF: a kinematic chain, a task space and a control group (`left_arm`, `right_arm`) per decorated arm; and the arm joints written as `<motor>` torque actuators, which is what makes gafro register a torque mode on them
+- *optionally* (`--gravcomp`) gravity compensation on each arm's kinematic subtree; **off by default**, since a weightless simulated arm hides the gravity a torque controller has to cancel
 - a collision exclusion between each gripper's two fingers
 - a wider `joint4` lower limit
 - position-servo finger actuators on both arms (fixes the left arm's `<motor>` fingers)
