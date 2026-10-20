@@ -185,6 +185,7 @@ scene = mujoco.MjModel.from_xml_path(str(get_model_path().parent / "scene.xml"))
 `openarm_assets.assembly` takes a vendored model and applies the decorations that planners and controllers typically need:
 
 - an end-effector site at each hand TCP
+- three actuators per arm joint, one per command mode: a `<motor>` (torque, group 1), a `<velocity>` servo (group 2) and a `<position>` servo (group 3), the groups gafro's robot interface switches between. The position and velocity gains are the ones the [openarm-driver](https://github.com/personalrobotics/openarm-driver) uses for the same modes on the arm (`ARM_KP`, `ARM_KD` in `assembly.py`); they are starting values, not tuned on an arm. Each actuator is limited to the joint's motor torque
 - the names [gafro](https://github.com/personalrobotics/gafro) reads from an MJCF: a kinematic chain, a task space and a control group (`left_arm`, `right_arm`) per decorated arm; and the arm joints written as `<motor>` torque actuators, which is what makes gafro register a torque mode on them
 - *optionally* (`--gravcomp`) gravity compensation on each arm's kinematic subtree; **off by default**, since a weightless simulated arm hides the gravity a torque controller has to cancel
 - a collision exclusion between each gripper's two fingers

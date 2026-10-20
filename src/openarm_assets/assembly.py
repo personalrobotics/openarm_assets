@@ -123,20 +123,69 @@ def add_gafro_annotations(spec: mujoco.MjSpec, sides: tuple[Side, ...]) -> None:
         spec.add_text(name=f"gafro_task_space:{side_name}", data=f"{chain};{group}")
 
 
-_ARM_ACTUATOR = re.compile(r'<general name="(\w+_joint\d_ctrl)" class="\w+" joint="(\w+)"[^>]*/>')
+# Each arm joint has three actuators, one per command mode a gafro controller can run it in, in the actuator groups the gafro
+# robot interface switches between (it disables the position and velocity ones while a joint is torque-controlled, and
+# the position one while it is velocity-controlled; see MujocoBackend::applyCommands):
+#
+#   torque    group 1   <motor>     force = command                              (MIT: kp = kd = 0, torque feed-forward)
+#   velocity  group 2   <velocity>  force = kd (command - dq)                    (MIT: kp = 0, velocity target)
+#   position  group 3   <position>  force = kp (command - q) - kd dq             (MIT: position target)
+#
+# The gains are the ones the openarm-driver holds and tracks a position with (its `kp` and `kd`), so a position command means the
+# same thing on the arm as in the sim. They are starting values for bring-up, not tuned on an arm. Per joint 1..7; the left and
+# right arms are alike.
+ARM_KP = (120.0, 120.0, 60.0, 60.0, 20.0, 20.0, 20.0)
+ARM_KD = (2.0, 2.0, 1.5, 1.5, 0.5, 0.5, 0.5)
+
+# The velocity a motor frame saturates at, per joint (Damiao DM8009, DM8009, DM4340, DM4340, DM4310 x3; openarm_can's limits).
+ARM_VELOCITY_LIMIT = (45.0, 45.0, 10.0, 10.0, 30.0, 30.0, 30.0)
+
+TORQUE_GROUP, VELOCITY_GROUP, POSITION_GROUP = 1, 2, 3
 
 
-def add_command_range(spec: mujoco.MjSpec, side_name: Side) -> None:
-    """Give each arm joint's motor a command range equal to its torque limit.
+def add_arm_actuators(spec: mujoco.MjSpec, side_name: Side) -> None:
+    """Give each arm joint a torque, a velocity and a position actuator.
 
-    The motors have gain 1 and no gear, so a command is a torque and the two ranges are the same limit. gafro reads
-    the command range (`control_input_range`) and not the force range, so both are set, and `to_xml` writes both.
+    The joint's existing actuator (gain 1, no bias, limited by its motor class's torque) becomes the torque one; the other two are
+    added with the same torque limit. Call after the joint limits are final: the position actuator's command range is the joint's.
     """
-    for joint in range(1, 8):
-        actuator = spec.actuator(f"{side_name}_joint{joint}_ctrl")
-        limit = actuator.forcerange[1]
-        actuator.ctrllimited = True
-        actuator.ctrlrange = [-limit, limit]
+    for joint_index in range(1, 8):
+        joint = f"openarm_{side_name}_joint{joint_index}"
+        kp, kd, speed = ARM_KP[joint_index - 1], ARM_KD[joint_index - 1], ARM_VELOCITY_LIMIT[joint_index - 1]
+
+        torque = spec.actuator(f"{side_name}_joint{joint_index}_ctrl")
+        limit = torque.forcerange[1]
+
+        torque.name = f"{side_name}_joint{joint_index}_torque"
+        torque.group = TORQUE_GROUP
+        torque.ctrllimited = True
+        torque.ctrlrange = [-limit, limit]
+
+        velocity = spec.add_actuator(name=f"{side_name}_joint{joint_index}_velocity", target=joint, trntype=mujoco.mjtTrn.mjTRN_JOINT)
+        velocity.group = VELOCITY_GROUP
+        velocity.gaintype = mujoco.mjtGain.mjGAIN_FIXED
+        velocity.gainprm[0] = kd
+        velocity.biastype = mujoco.mjtBias.mjBIAS_AFFINE
+        velocity.biasprm[:3] = [0.0, 0.0, -kd]
+        velocity.ctrllimited = True
+        velocity.ctrlrange = [-speed, speed]
+        velocity.forcelimited = True
+        velocity.forcerange = [-limit, limit]
+
+        lower, upper = spec.joint(joint).range
+        position = spec.add_actuator(name=f"{side_name}_joint{joint_index}_position", target=joint, trntype=mujoco.mjtTrn.mjTRN_JOINT)
+        position.group = POSITION_GROUP
+        position.gaintype = mujoco.mjtGain.mjGAIN_FIXED
+        position.gainprm[0] = kp
+        position.biastype = mujoco.mjtBias.mjBIAS_AFFINE
+        position.biasprm[:3] = [0.0, -kp, -kd]
+        position.ctrllimited = True
+        position.ctrlrange = [lower, upper]
+        position.forcelimited = True
+        position.forcerange = [-limit, limit]
+
+
+_ARM_ACTUATOR = re.compile(r'<general name="(\w+_joint\d_(torque|velocity|position))" [^>]*/>')
 
 
 def to_xml(spec: mujoco.MjSpec) -> str:
@@ -144,26 +193,30 @@ def to_xml(spec: mujoco.MjSpec) -> str:
 
     Two things differ from `spec.to_xml()`, both for gafro and neither a change to the model MuJoCo compiles:
 
-    - The seven arm joints per side are written as `<motor>`. gafro registers a torque mode only for a motor element, and a
-      plain `<general>` (which is what these are: gain 1, no bias) gets no mode at all, so nothing can command the joint
-      and RI's position moves wait forever. The motor keeps the joint's torque limit as its force range and, from
-      `add_command_range`, its command range.
+    - The arm joints' three actuators are written as `<motor>`, `<velocity>` and `<position>`, with the parameters the spec
+      gives them. gafro registers a command mode from the element kind: a plain `<general>` (gain 1, no bias, which is what a
+      torque motor is) gets no mode at all, so nothing could command the joint and RI's moves would wait forever.
     - `meshdir` is `assets`, which is where gafro will look: it drops an MJCF `meshdir` on load and writes the default back out,
       so the meshes have to be at `assets` beside the model file (see `link_meshes`).
     """
     xml = spec.to_xml()
 
-    def motor(match: re.Match) -> str:
-        name, joint = match.groups()
-        limit = spec.actuator(name).forcerange[1]
-        return (
-            f'<motor name="{name}" joint="{joint}" gear="1" ctrllimited="true" ctrlrange="{-limit:g} {limit:g}" '
-            f'forcelimited="true" forcerange="{-limit:g} {limit:g}"/>'
-        )
+    def shortcut(match: re.Match) -> str:
+        name, kind = match.groups()
+        actuator = spec.actuator(name)
+        joint = actuator.target
+        lo, hi = actuator.ctrlrange
+        torque = actuator.forcerange[1]
+        limits = f'ctrllimited="true" ctrlrange="{lo:.10g} {hi:.10g}" forcelimited="true" forcerange="{-torque:.10g} {torque:.10g}"'
+        if kind == "torque":
+            return f'<motor name="{name}" joint="{joint}" gear="1" group="{actuator.group}" {limits}/>'
+        if kind == "velocity":
+            return f'<velocity name="{name}" joint="{joint}" kv="{actuator.gainprm[0]:.10g}" group="{actuator.group}" {limits}/>'
+        return f'<position name="{name}" joint="{joint}" kp="{actuator.gainprm[0]:.10g}" kv="{-actuator.biasprm[2]:.10g}" group="{actuator.group}" {limits}/>'
 
-    xml, replaced = _ARM_ACTUATOR.subn(motor, xml)
-    if replaced == 0:
-        raise RuntimeError("no arm joint actuators found to write as motors; has the vendored model's actuator layout changed?")
+    xml, replaced = _ARM_ACTUATOR.subn(shortcut, xml)
+    if replaced != 42:
+        raise RuntimeError(f"expected 42 arm joint actuators (3 for each of 14 joints), found {replaced}; has the vendored model's actuator layout changed?")
 
     return xml.replace('meshdir="../meshes/"', 'meshdir="assets"')
 
@@ -259,9 +312,9 @@ def build_openarm(
     # finger actuator fix and keyframe cover both arms -- not just `sides` --
     # to keep every output out of that singular pose and consistent across arms.
     for side_name, s in _SIDES.items():
-        add_command_range(spec, side_name)
         widen_joint4_lower_limit(spec, s["joint4"])
         make_finger_actuators_position(spec, s["finger_actuators"])
+        add_arm_actuators(spec, side_name)
     add_ready_keyframe(spec, [s["joint4"] for s in _SIDES.values()])
     add_gafro_annotations(spec, sides)
 

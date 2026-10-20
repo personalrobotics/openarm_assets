@@ -38,8 +38,8 @@
     <material name="matte_black" reflectance="0.0509804" rgba="0.247059 0.247059 0.247059 1"/>
     <material name="metal_silver" shininess="1" reflectance="1" rgba="0.796078 0.796078 0.796078 1"/>
     <mesh name="body_collision" file="collision/body/body_link0.stl" scale="0.001 0.001 0.001"/>
-    <mesh name="link0_collision" file="collision/arm/link0.stl" scale="0.001 0.001 0.001"/>
-    <mesh name="link0_collision_left" content_type="model/stl" file="collision/arm/link0.stl" scale="0.001 -0.001 0.001"/>
+    <mesh name="link0_collision" content_type="model/stl" file="collision/arm/link0.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link0_collision_left" file="collision/arm/link0.stl" scale="0.001 -0.001 0.001"/>
     <mesh name="link1_collision" file="collision/arm/link1.stl" scale="0.001 0.001 0.001"/>
     <mesh name="link1_collision_left" content_type="model/stl" file="collision/arm/link1.stl" scale="0.001 -0.001 0.001"/>
     <mesh name="link2_collision" file="collision/arm/link2.stl" scale="0.001 0.001 0.001"/>
@@ -329,24 +329,52 @@
   </equality>
 
   <actuator>
-    <motor name="left_joint1_ctrl" joint="openarm_left_joint1" gear="1" ctrllimited="true" ctrlrange="-40 40" forcelimited="true" forcerange="-40 40"/>
-    <motor name="left_joint2_ctrl" joint="openarm_left_joint2" gear="1" ctrllimited="true" ctrlrange="-40 40" forcelimited="true" forcerange="-40 40"/>
-    <motor name="left_joint3_ctrl" joint="openarm_left_joint3" gear="1" ctrllimited="true" ctrlrange="-27 27" forcelimited="true" forcerange="-27 27"/>
-    <motor name="left_joint4_ctrl" joint="openarm_left_joint4" gear="1" ctrllimited="true" ctrlrange="-27 27" forcelimited="true" forcerange="-27 27"/>
-    <motor name="left_joint5_ctrl" joint="openarm_left_joint5" gear="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
-    <motor name="left_joint6_ctrl" joint="openarm_left_joint6" gear="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
-    <motor name="left_joint7_ctrl" joint="openarm_left_joint7" gear="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
+    <motor name="left_joint1_torque" joint="openarm_left_joint1" gear="1" group="1" ctrllimited="true" ctrlrange="-40 40" forcelimited="true" forcerange="-40 40"/>
+    <motor name="left_joint2_torque" joint="openarm_left_joint2" gear="1" group="1" ctrllimited="true" ctrlrange="-40 40" forcelimited="true" forcerange="-40 40"/>
+    <motor name="left_joint3_torque" joint="openarm_left_joint3" gear="1" group="1" ctrllimited="true" ctrlrange="-27 27" forcelimited="true" forcerange="-27 27"/>
+    <motor name="left_joint4_torque" joint="openarm_left_joint4" gear="1" group="1" ctrllimited="true" ctrlrange="-27 27" forcelimited="true" forcerange="-27 27"/>
+    <motor name="left_joint5_torque" joint="openarm_left_joint5" gear="1" group="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
+    <motor name="left_joint6_torque" joint="openarm_left_joint6" gear="1" group="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
+    <motor name="left_joint7_torque" joint="openarm_left_joint7" gear="1" group="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
     <general name="left_finger1_ctrl" class="motor_finger" joint="openarm_left_finger_joint1"/>
     <general name="left_finger2_ctrl" class="motor_finger" joint="openarm_left_finger_joint2"/>
-    <motor name="right_joint1_ctrl" joint="openarm_right_joint1" gear="1" ctrllimited="true" ctrlrange="-40 40" forcelimited="true" forcerange="-40 40"/>
-    <motor name="right_joint2_ctrl" joint="openarm_right_joint2" gear="1" ctrllimited="true" ctrlrange="-40 40" forcelimited="true" forcerange="-40 40"/>
-    <motor name="right_joint3_ctrl" joint="openarm_right_joint3" gear="1" ctrllimited="true" ctrlrange="-27 27" forcelimited="true" forcerange="-27 27"/>
-    <motor name="right_joint4_ctrl" joint="openarm_right_joint4" gear="1" ctrllimited="true" ctrlrange="-27 27" forcelimited="true" forcerange="-27 27"/>
-    <motor name="right_joint5_ctrl" joint="openarm_right_joint5" gear="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
-    <motor name="right_joint6_ctrl" joint="openarm_right_joint6" gear="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
-    <motor name="right_joint7_ctrl" joint="openarm_right_joint7" gear="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
+    <motor name="right_joint1_torque" joint="openarm_right_joint1" gear="1" group="1" ctrllimited="true" ctrlrange="-40 40" forcelimited="true" forcerange="-40 40"/>
+    <motor name="right_joint2_torque" joint="openarm_right_joint2" gear="1" group="1" ctrllimited="true" ctrlrange="-40 40" forcelimited="true" forcerange="-40 40"/>
+    <motor name="right_joint3_torque" joint="openarm_right_joint3" gear="1" group="1" ctrllimited="true" ctrlrange="-27 27" forcelimited="true" forcerange="-27 27"/>
+    <motor name="right_joint4_torque" joint="openarm_right_joint4" gear="1" group="1" ctrllimited="true" ctrlrange="-27 27" forcelimited="true" forcerange="-27 27"/>
+    <motor name="right_joint5_torque" joint="openarm_right_joint5" gear="1" group="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
+    <motor name="right_joint6_torque" joint="openarm_right_joint6" gear="1" group="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
+    <motor name="right_joint7_torque" joint="openarm_right_joint7" gear="1" group="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
     <general name="right_finger1_ctrl" class="motor_finger" joint="openarm_right_finger_joint1"/>
     <general name="right_finger2_ctrl" class="motor_finger" joint="openarm_right_finger_joint2"/>
+    <velocity name="left_joint1_velocity" joint="openarm_left_joint1" kv="2" group="2" ctrllimited="true" ctrlrange="-45 45" forcelimited="true" forcerange="-40 40"/>
+    <position name="left_joint1_position" joint="openarm_left_joint1" kp="120" kv="2" group="3" ctrllimited="true" ctrlrange="-3.490659 1.396263" forcelimited="true" forcerange="-40 40"/>
+    <velocity name="left_joint2_velocity" joint="openarm_left_joint2" kv="2" group="2" ctrllimited="true" ctrlrange="-45 45" forcelimited="true" forcerange="-40 40"/>
+    <position name="left_joint2_position" joint="openarm_left_joint2" kp="120" kv="2" group="3" ctrllimited="true" ctrlrange="-3.316125327 0.1745326732" forcelimited="true" forcerange="-40 40"/>
+    <velocity name="left_joint3_velocity" joint="openarm_left_joint3" kv="1.5" group="2" ctrllimited="true" ctrlrange="-10 10" forcelimited="true" forcerange="-27 27"/>
+    <position name="left_joint3_position" joint="openarm_left_joint3" kp="60" kv="1.5" group="3" ctrllimited="true" ctrlrange="-1.570796 1.570796" forcelimited="true" forcerange="-27 27"/>
+    <velocity name="left_joint4_velocity" joint="openarm_left_joint4" kv="1.5" group="2" ctrllimited="true" ctrlrange="-10 10" forcelimited="true" forcerange="-27 27"/>
+    <position name="left_joint4_position" joint="openarm_left_joint4" kp="60" kv="1.5" group="3" ctrllimited="true" ctrlrange="-0.05 2.443461" forcelimited="true" forcerange="-27 27"/>
+    <velocity name="left_joint5_velocity" joint="openarm_left_joint5" kv="0.5" group="2" ctrllimited="true" ctrlrange="-30 30" forcelimited="true" forcerange="-7 7"/>
+    <position name="left_joint5_position" joint="openarm_left_joint5" kp="20" kv="0.5" group="3" ctrllimited="true" ctrlrange="-1.570796 1.570796" forcelimited="true" forcerange="-7 7"/>
+    <velocity name="left_joint6_velocity" joint="openarm_left_joint6" kv="0.5" group="2" ctrllimited="true" ctrlrange="-30 30" forcelimited="true" forcerange="-7 7"/>
+    <position name="left_joint6_position" joint="openarm_left_joint6" kp="20" kv="0.5" group="3" ctrllimited="true" ctrlrange="-0.785398 0.785398" forcelimited="true" forcerange="-7 7"/>
+    <velocity name="left_joint7_velocity" joint="openarm_left_joint7" kv="0.5" group="2" ctrllimited="true" ctrlrange="-30 30" forcelimited="true" forcerange="-7 7"/>
+    <position name="left_joint7_position" joint="openarm_left_joint7" kp="20" kv="0.5" group="3" ctrllimited="true" ctrlrange="-1.570796 1.570796" forcelimited="true" forcerange="-7 7"/>
+    <velocity name="right_joint1_velocity" joint="openarm_right_joint1" kv="2" group="2" ctrllimited="true" ctrlrange="-45 45" forcelimited="true" forcerange="-40 40"/>
+    <position name="right_joint1_position" joint="openarm_right_joint1" kp="120" kv="2" group="3" ctrllimited="true" ctrlrange="-1.396263 3.490659" forcelimited="true" forcerange="-40 40"/>
+    <velocity name="right_joint2_velocity" joint="openarm_right_joint2" kv="2" group="2" ctrllimited="true" ctrlrange="-45 45" forcelimited="true" forcerange="-40 40"/>
+    <position name="right_joint2_position" joint="openarm_right_joint2" kp="120" kv="2" group="3" ctrllimited="true" ctrlrange="-0.1745326732 3.316125327" forcelimited="true" forcerange="-40 40"/>
+    <velocity name="right_joint3_velocity" joint="openarm_right_joint3" kv="1.5" group="2" ctrllimited="true" ctrlrange="-10 10" forcelimited="true" forcerange="-27 27"/>
+    <position name="right_joint3_position" joint="openarm_right_joint3" kp="60" kv="1.5" group="3" ctrllimited="true" ctrlrange="-1.570796 1.570796" forcelimited="true" forcerange="-27 27"/>
+    <velocity name="right_joint4_velocity" joint="openarm_right_joint4" kv="1.5" group="2" ctrllimited="true" ctrlrange="-10 10" forcelimited="true" forcerange="-27 27"/>
+    <position name="right_joint4_position" joint="openarm_right_joint4" kp="60" kv="1.5" group="3" ctrllimited="true" ctrlrange="-0.05 2.443461" forcelimited="true" forcerange="-27 27"/>
+    <velocity name="right_joint5_velocity" joint="openarm_right_joint5" kv="0.5" group="2" ctrllimited="true" ctrlrange="-30 30" forcelimited="true" forcerange="-7 7"/>
+    <position name="right_joint5_position" joint="openarm_right_joint5" kp="20" kv="0.5" group="3" ctrllimited="true" ctrlrange="-1.570796 1.570796" forcelimited="true" forcerange="-7 7"/>
+    <velocity name="right_joint6_velocity" joint="openarm_right_joint6" kv="0.5" group="2" ctrllimited="true" ctrlrange="-30 30" forcelimited="true" forcerange="-7 7"/>
+    <position name="right_joint6_position" joint="openarm_right_joint6" kp="20" kv="0.5" group="3" ctrllimited="true" ctrlrange="-0.785398 0.785398" forcelimited="true" forcerange="-7 7"/>
+    <velocity name="right_joint7_velocity" joint="openarm_right_joint7" kv="0.5" group="2" ctrllimited="true" ctrlrange="-30 30" forcelimited="true" forcerange="-7 7"/>
+    <position name="right_joint7_position" joint="openarm_right_joint7" kp="20" kv="0.5" group="3" ctrllimited="true" ctrlrange="-1.570796 1.570796" forcelimited="true" forcerange="-7 7"/>
   </actuator>
 
   <sensor>
