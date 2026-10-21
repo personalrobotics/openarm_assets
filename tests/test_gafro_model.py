@@ -53,7 +53,8 @@ def test_groups_and_task_spaces(pair):
     system = pair["system"]
 
     assert [g.get_name() for g in system.get_control_groups()] == ["left_arm", "right_arm"]
-    assert system.get_task_space_names() == list(SIDES)
+    assert system.get_task_space_names() == [*SIDES, "bimanual"]
+    assert len(system.get_task_space("bimanual").get_joint_indices()) == 14
 
 
 @pytest.mark.parametrize("side", SIDES)

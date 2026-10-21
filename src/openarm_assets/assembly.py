@@ -109,7 +109,7 @@ def add_gafro_annotations(spec: mujoco.MjSpec, sides: tuple[Side, ...]) -> None:
     tip body (gafro looks the tip up by that name), a task space by the chains it spans. The tip is the hand TCP body, the same frame
     `add_ee_site` puts `openarm_<side>_ee_site` on, so the task space is the MuJoCo tool frame and not
     the URDFs' `hand_tcp` (see `opendubs/notes/design/arm-kinematic-models.md`). Each arm's seven joints are one
-    control group, which the task space names.
+    control group, which the task space names. With both arms there is also a `bimanual` task space spanning both.
     """
     for side_name in sides:
         side = _SIDES[side_name]
@@ -122,6 +122,13 @@ def add_gafro_annotations(spec: mujoco.MjSpec, sides: tuple[Side, ...]) -> None:
         joints = " ".join(f"openarm_{side_name}_joint{j}" for j in range(1, 8))
         spec.add_text(name=f"gafro_control_group:{group}", data=f"joint: {joints}")
         spec.add_text(name=f"gafro_task_space:{side_name}", data=f"{chain};{group}")
+
+    # Both arms as one task space, for a controller over both at once: a RobotInterface runs one controller, and a stage binds to one task
+    # space, so moving both arms together (engaging them from stow) needs a task space that is both.
+    if len(sides) == 2:
+        chains = " ".join(_SIDES[side_name]["tcp_body"] for side_name in sides)
+        groups = " ".join(f"{side_name}_arm" for side_name in sides)
+        spec.add_text(name="gafro_task_space:bimanual", data=f"{chains};{groups}")
 
 
 # Each arm joint has three actuators, one per command mode a gafro controller can run it in, in the actuator groups the gafro
