@@ -69,34 +69,13 @@ def test_chain_tip_is_the_mujoco_tool_body(pair, side):
         np.testing.assert_allclose(T[:3, :3], data.xmat[body].reshape(3, 3), atol=1e-6)
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="gafro applies gravity along -z of the chain's base link, not of the system root; the OpenArm "
-    "arms are mounted rotated about x, so its gravity torque is for a differently oriented robot. "
-    "Passes once gafro takes gravity in the root frame.",
-)
 def test_gravity_torque_in_the_world_frame(pair):
+    """Gravity is along the system root's -z: the arms are mounted rotated about x, so a gravity along each arm's own z would not match."""
     system, dadr = pair["system"], pair["dadr"]
     zero = np.zeros(system.get_dof())
 
     for q, data in _configurations(pair):
         np.testing.assert_allclose(system.compute_inverse_dynamics(q, zero, zero), data.qfrc_bias[dadr], atol=1e-6)
-
-
-@pytest.mark.parametrize("side,joints", [("left", slice(0, 7)), ("right", slice(9, 16))])
-def test_gravity_torque_along_the_arm_base(pair, side, joints):
-    """What gafro computes today: MuJoCo's gravity torque with gravity along -z of the arm's link0."""
-    model, system, dadr = pair["model"], pair["system"], pair["dadr"]
-    link0 = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, f"openarm_{side}_link0")
-    zero = np.zeros(system.get_dof())
-
-    for q, data in _configurations(pair):
-        model.opt.gravity[:] = data.xmat[link0].reshape(3, 3) @ [0.0, 0.0, -9.81]
-        mujoco.mj_forward(model, data)
-
-        np.testing.assert_allclose(system.compute_inverse_dynamics(q, zero, zero)[joints], data.qfrc_bias[dadr][joints], atol=1e-6)
-
-    model.opt.gravity[:] = [0.0, 0.0, -9.81]
 
 
 def test_mass_matrix(pair):
@@ -107,3 +86,53 @@ def test_mass_matrix(pair):
         mujoco.mj_fullM(model, data, full)
 
         np.testing.assert_allclose(system.compute_mass_matrix(q), full[np.ix_(dadr, dadr)], atol=1e-6)
+
+
+def test_actuator_limits_are_the_urdfs_rated_ones(pair):
+    """Torque and velocity limits of every arm joint are enactic's, from the vendored URDF."""
+    from openarm_assets.assembly import urdf_limits
+
+    model = pair["model"]
+    rated = urdf_limits()
+
+    for name, (effort, velocity) in rated.items():
+        if "finger" in name or "joint" not in name:
+            continue
+        side, joint = name.split("_")[1], name.split("joint")[-1]
+        torque = model.actuator(f"{side}_joint{joint}_torque")
+        speed = model.actuator(f"{side}_joint{joint}_velocity")
+        position = model.actuator(f"{side}_joint{joint}_position")
+
+        assert torque.ctrlrange[1] == pytest.approx(effort)
+        assert torque.forcerange[1] == pytest.approx(effort)
+        assert speed.ctrlrange[1] == pytest.approx(velocity)
+        assert position.forcerange[1] == pytest.approx(effort)
+
+
+@pytest.mark.parametrize("side", SIDES)
+def test_joint_force_range_is_the_rating_and_bounds_the_sum_of_the_actuators(pair, side):
+    """The three actuators on a joint act together in plain MuJoCo; the joint's own range keeps the total at the rating."""
+    from openarm_assets.assembly import urdf_limits
+
+    model = pair["model"]
+    rated = urdf_limits()
+
+    for joint_index in range(1, 8):
+        name = f"openarm_{side}_joint{joint_index}"
+        joint = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name)
+        effort = rated[name][0]
+
+        assert model.jnt_actfrclimited[joint]
+        assert model.jnt_actfrcrange[joint][0] == pytest.approx(-effort)
+        assert model.jnt_actfrcrange[joint][1] == pytest.approx(effort)
+
+    # All three actuators of one joint at full command, in plain MuJoCo (no group disabled): the force stays at the rating.
+    data = mujoco.MjData(model)
+    joint = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, f"openarm_{side}_joint3")
+    effort = rated[f"openarm_{side}_joint3"][0]
+    for kind, command in (("torque", 1e3), ("velocity", 1e3), ("position", 1e3)):
+        actuator = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, f"{side}_joint3_{kind}")
+        data.ctrl[actuator] = np.clip(command, *model.actuator_ctrlrange[actuator])
+    mujoco.mj_forward(model, data)
+
+    assert abs(data.qfrc_actuator[model.jnt_dofadr[joint]]) <= effort + 1e-9

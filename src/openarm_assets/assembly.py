@@ -3,6 +3,7 @@
 
 import argparse
 import re
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Literal
 
@@ -137,8 +138,19 @@ def add_gafro_annotations(spec: mujoco.MjSpec, sides: tuple[Side, ...]) -> None:
 ARM_KP = (120.0, 120.0, 60.0, 60.0, 20.0, 20.0, 20.0)
 ARM_KD = (2.0, 2.0, 1.5, 1.5, 0.5, 0.5, 0.5)
 
-# The velocity a motor frame saturates at, per joint (Damiao DM8009, DM8009, DM4340, DM4340, DM4310 x3; openarm_can's limits).
-ARM_VELOCITY_LIMIT = (45.0, 45.0, 10.0, 10.0, 30.0, 30.0, 30.0)
+# The arm's rated joint velocity and torque are enactic's, in the vendored URDF (<limit effort velocity>): rad/s and N m. They are lower
+# than what a motor frame can encode (the Damiao ranges), and they are the limits of the arm, so they are the velocity command range.
+_URDF = _MODEL_DIR / "urdf" / "example" / "v1.urdf"
+
+
+def urdf_limits(path: Path = _URDF) -> dict[str, tuple[float, float]]:
+    """Each joint's (effort, velocity) limit from the URDF."""
+    limits = {}
+    for joint in ET.parse(path).getroot().iter("joint"):
+        limit = joint.find("limit")
+        if limit is not None and limit.get("effort") and limit.get("velocity"):
+            limits[joint.get("name")] = (float(limit.get("effort")), float(limit.get("velocity")))
+    return limits
 
 TORQUE_GROUP, VELOCITY_GROUP, POSITION_GROUP = 1, 2, 3
 
@@ -151,10 +163,22 @@ def add_arm_actuators(spec: mujoco.MjSpec, side_name: Side) -> None:
     """
     for joint_index in range(1, 8):
         joint = f"openarm_{side_name}_joint{joint_index}"
-        kp, kd, speed = ARM_KP[joint_index - 1], ARM_KD[joint_index - 1], ARM_VELOCITY_LIMIT[joint_index - 1]
+        kp, kd = ARM_KP[joint_index - 1], ARM_KD[joint_index - 1]
+        rated_torque, speed = urdf_limits()[joint]
 
         torque = spec.actuator(f"{side_name}_joint{joint_index}_ctrl")
         limit = torque.forcerange[1]
+
+        # The motor classes' torque limit and the URDF's rating are the same number; if they ever differ, one of them is wrong.
+        if abs(limit - rated_torque) > 1e-6:
+            raise RuntimeError(f"{joint}: the model's torque limit {limit} differs from the URDF's effort {rated_torque}")
+
+        # The three actuators act on the joint together in plain MuJoCo, each up to the rating, so without a joint-level limit the joint
+        # can deliver three times it. The joint's own actuator force range is the total the motor can give; the same number as each
+        # actuator's, so that whichever is read agrees.
+        joint_spec = spec.joint(joint)
+        joint_spec.actfrclimited = mujoco.mjtLimited.mjLIMITED_TRUE
+        joint_spec.actfrcrange = [-limit, limit]
 
         torque.name = f"{side_name}_joint{joint_index}_torque"
         torque.group = TORQUE_GROUP
@@ -191,13 +215,11 @@ _ARM_ACTUATOR = re.compile(r'<general name="(\w+_joint\d_(torque|velocity|positi
 def to_xml(spec: mujoco.MjSpec) -> str:
     """The spec as MJCF text, written the way gafro reads it.
 
-    Two things differ from `spec.to_xml()`, both for gafro and neither a change to the model MuJoCo compiles:
+    One thing differs from `spec.to_xml()`, for gafro and not a change to the model MuJoCo compiles:
 
     - The arm joints' three actuators are written as `<motor>`, `<velocity>` and `<position>`, with the parameters the spec
       gives them. gafro registers a command mode from the element kind: a plain `<general>` (gain 1, no bias, which is what a
       torque motor is) gets no mode at all, so nothing could command the joint and RI's moves would wait forever.
-    - `meshdir` is `assets`, which is where gafro will look: it drops an MJCF `meshdir` on load and writes the default back out,
-      so the meshes have to be at `assets` beside the model file (see `link_meshes`).
     """
     xml = spec.to_xml()
 
@@ -218,15 +240,7 @@ def to_xml(spec: mujoco.MjSpec) -> str:
     if replaced != 42:
         raise RuntimeError(f"expected 42 arm joint actuators (3 for each of 14 joints), found {replaced}; has the vendored model's actuator layout changed?")
 
-    return xml.replace('meshdir="../meshes/"', 'meshdir="assets"')
-
-
-def link_meshes(out_dir: Path) -> None:
-    """Make `assets` in `out_dir` a link to the vendored meshes, where gafro looks for them."""
-    link = out_dir / "assets"
-    if link.is_symlink() or link.exists():
-        link.unlink()
-    link.symlink_to(Path("..") / "meshes")
+    return xml
 
 
 def add_finger_exclude(spec: mujoco.MjSpec, left_finger: str, right_finger: str) -> None:
@@ -367,7 +381,6 @@ def main() -> None:
    out = args.out or _OUT_PATHS[args.sides]
    out.parent.mkdir(parents=True, exist_ok=True)
    out.write_text(to_xml(spec))
-   link_meshes(out.parent)
    print(f"Wrote {out}")
  
  

@@ -158,7 +158,7 @@ get_model_path()                       # vendored single-arm openarm.xml (undeco
 | `openarm_left_decorated.xml` | Same, applied to the left arm only |
 | `openarm_right_decorated.xml` | Same, applied to the right arm only |
 
-All three contain both arms (18 DOF). The `left` and `right` variants differ only in which arm receives the decorations. The generated files are committed, so you don't need to run the assembly step to use them. They load `meshes/` through `generated/assets`, a link the assembly step creates: gafro drops an MJCF `meshdir` on load and looks for `assets` beside the model file.
+All three contain both arms (18 DOF). The `left` and `right` variants differ only in which arm receives the decorations. The generated files are committed, so you don't need to run the assembly step to use them.
 
 **Vendored (undecorated) models** in `models/openarm/vendor/`, from upstream with one change (see [Provenance](#provenance)):
 
@@ -185,7 +185,7 @@ scene = mujoco.MjModel.from_xml_path(str(get_model_path().parent / "scene.xml"))
 `openarm_assets.assembly` takes a vendored model and applies the decorations that planners and controllers typically need:
 
 - an end-effector site at each hand TCP
-- three actuators per arm joint, one per command mode: a `<motor>` (torque, group 1), a `<velocity>` servo (group 2) and a `<position>` servo (group 3), the groups gafro's robot interface switches between. The position and velocity gains are the ones the [openarm-driver](https://github.com/personalrobotics/openarm-driver) uses for the same modes on the arm (`ARM_KP`, `ARM_KD` in `assembly.py`); they are starting values, not tuned on an arm. Each actuator is limited to the joint's motor torque
+- three actuators per arm joint, one per command mode: a `<motor>` (torque, group 1), a `<velocity>` servo (group 2) and a `<position>` servo (group 3), the groups gafro's robot interface switches between. The velocity command range and the torque limit are the arm's rated ones, from enactic's URDF (`<limit effort velocity>`); the assembly step checks that the URDF's effort matches the model's torque limit. The position and velocity gains are the ones the [openarm-driver](https://github.com/personalrobotics/openarm-driver) uses for the same modes on the arm (`ARM_KP`, `ARM_KD` in `assembly.py`); they are starting values, not tuned on an arm. Each actuator is limited to the joint's motor torque, and so is the joint's total (`actuatorfrcrange`): in plain MuJoCo the three act together, and without that limit a joint would deliver three times its rating
 - the names [gafro](https://github.com/personalrobotics/gafro) reads from an MJCF: a kinematic chain, a task space and a control group (`left_arm`, `right_arm`) per decorated arm; and the arm joints written as `<motor>` torque actuators, which is what makes gafro register a torque mode on them
 - *optionally* (`--gravcomp`) gravity compensation on each arm's kinematic subtree; **off by default**, since a weightless simulated arm hides the gravity a torque controller has to cancel
 - a collision exclusion between each gripper's two fingers
