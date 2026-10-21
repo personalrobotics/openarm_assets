@@ -267,11 +267,14 @@ def add_finger_exclude(spec: mujoco.MjSpec, left_finger: str, right_finger: str)
     exclude.bodyname1 = left_finger
     exclude.bodyname2 = right_finger
 
-def add_ready_keyframe(spec: mujoco.MjSpec, joint4_names: list[str], joint4_pos: float = 0.3) -> None:
-    """Add the "ready" home pose: all joints at 0 except `joint4` on each
+def add_ready_keyframe(spec: mujoco.MjSpec, joint4_names: list[str], joint4_pos: float = 0.3, pose: dict[str, float] | None = None) -> None:
+    """Add the "ready" keyframe: all joints at 0 except `joint4` on each
     arm. joint4's range is [0, 2.44346] (see hw_validation/joint_limits.yaml),
     so 0 sits exactly on its lower limit -- a singular pose for planning to
     start from. `joint4_pos` keeps it clear of that limit instead.
+
+    That is only clear of the limit, and still nearly singular (the elbow is almost straight). A robot that works from a
+    ready pose gives its own as `pose`: joint name -> angle, the others at 0.
     """
     model = spec.compile()
     qpos = np.zeros(model.nq)
@@ -280,6 +283,17 @@ def add_ready_keyframe(spec: mujoco.MjSpec, joint4_names: list[str], joint4_pos:
         if jid < 0:
             raise RuntimeError(f"No joint named {name!r} in this spec")
         qpos[model.jnt_qposadr[jid]] = joint4_pos
+
+    if pose is not None:
+        qpos[:] = 0.0
+        for name, value in pose.items():
+            jid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name)
+            if jid < 0:
+                raise ValueError(f"no joint named {name!r}")
+            low, high = model.jnt_range[jid]
+            if not low - 1e-9 <= value <= high + 1e-9:
+                raise ValueError(f"{name}: {value} is outside the joint's range [{low}, {high}]")
+            qpos[model.jnt_qposadr[jid]] = value
 
     key = spec.add_key()
     key.name = "ready"
@@ -320,6 +334,7 @@ def build_openarm(
         sides: tuple[Side, ...] = ("left", "right"),
         gravcomp: bool = False,
         joint_ranges: dict[str, tuple[float, float]] | None = None,
+        ready: dict[str, float] | None = None,
 ) -> mujoco.MjSpec:
     """Load the OpenArm scene and apply all decorations.
 
@@ -329,7 +344,8 @@ def build_openarm(
     controller has to cancel. Pass `gravcomp` for a weightless sim, as the impedance controller's
     onboard compensation made the real arm.
 
-    `joint_ranges` narrows named joints' ranges for a robot (see `narrow_joint_ranges`).
+    `joint_ranges` narrows named joints' ranges for a robot (see `narrow_joint_ranges`); `ready` is the robot's own ready pose
+    (joint name -> angle, the others at 0), in place of the arm's nearly straight one (see `add_ready_keyframe`).
     """
 
     spec = mujoco.MjSpec.from_file(str(src))
@@ -355,7 +371,7 @@ def build_openarm(
 
     for side_name in _SIDES:
         add_arm_actuators(spec, side_name)
-    add_ready_keyframe(spec, [s["joint4"] for s in _SIDES.values()])
+    add_ready_keyframe(spec, [s["joint4"] for s in _SIDES.values()], pose=ready)
     add_gafro_annotations(spec, sides)
 
     return spec
@@ -396,6 +412,10 @@ def main() -> None:
        help="Narrow a joint's range, radians (repeatable): a robot's own limit, for what is around the arm. Never wider than the arm's.",
    )
    parser.add_argument(
+       "--ready", action="append", default=[], metavar="NAME=VALUE",
+       help="The robot's own ready pose, radians, one joint per flag (repeatable); the others are at 0. Inside the joint's range.",
+   )
+   parser.add_argument(
        "--gravcomp", action="store_true",
        help="Turn on MuJoCo gravity compensation on the decorated arms (off by default; see build_openarm).",
    )
@@ -407,7 +427,8 @@ def main() -> None:
        name, _, bounds = item.partition("=")
        lower, _, upper = bounds.partition(",")
        ranges[name] = (float(lower), float(upper))
-   spec = build_openarm(args.src, sides=sides, gravcomp=args.gravcomp, joint_ranges=ranges)
+   ready = {item.partition("=")[0]: float(item.partition("=")[2]) for item in args.ready} or None
+   spec = build_openarm(args.src, sides=sides, gravcomp=args.gravcomp, joint_ranges=ranges, ready=ready)
  
    # Sanity check: does it actually compile?
    model = spec.compile()

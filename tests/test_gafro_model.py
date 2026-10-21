@@ -164,3 +164,28 @@ def test_a_robot_can_narrow_a_joint_and_never_widen_it():
         build_openarm(joint_ranges={"openarm_right_joint9": (0.0, 1.0)})
     with pytest.raises(ValueError, match="empty"):
         build_openarm(joint_ranges={"openarm_right_joint2": (1.0, 1.0)})
+
+
+def test_a_robot_can_give_its_own_ready_pose():
+    """The ready keyframe is the robot's, in its joint names; the arm's own is nearly singular, and out-of-range or unknown joints are refused."""
+    from openarm_assets.assembly import build_openarm
+
+    pose = {"openarm_right_joint2": 0.7, "openarm_right_joint4": 1.8, "openarm_left_joint2": -0.7, "openarm_left_joint4": 1.8}
+    model = build_openarm(ready=pose).compile()
+    key = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_KEY, "ready")
+
+    for name, value in pose.items():
+        joint = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name)
+        assert model.key_qpos[key][model.jnt_qposadr[joint]] == pytest.approx(value)
+    other = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, "openarm_right_joint3")
+    assert model.key_qpos[key][model.jnt_qposadr[other]] == 0.0
+
+    # Without it the keyframe is the arm's own: only joint 4 is off zero.
+    default = build_openarm().compile()
+    joint4 = mujoco.mj_name2id(default, mujoco.mjtObj.mjOBJ_JOINT, "openarm_right_joint4")
+    assert default.key_qpos[0][default.jnt_qposadr[joint4]] == pytest.approx(0.3)
+
+    with pytest.raises(ValueError, match="outside the joint's range"):
+        build_openarm(ready={"openarm_right_joint6": 2.0})
+    with pytest.raises(ValueError, match="no joint named"):
+        build_openarm(ready={"openarm_right_joint9": 0.1})

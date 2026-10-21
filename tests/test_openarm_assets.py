@@ -127,10 +127,14 @@ class TestAssembly:
         spec.modelfiledir = str(path.parent)
         regenerated = spec.compile()
 
+        # What an actuator is for (MuJoCo 3.16's actuator_ctrlspec) follows from whether a position or velocity element or a general one
+        # was written, and is metadata, not dynamics: the committed XML is written by whichever MuJoCo generated it.
+        metadata = {"actuator_ctrlspec"}
+
         differing = []
         for field in dir(committed):
             value = getattr(committed, field, None)
-            if field.startswith("_") or not isinstance(value, np.ndarray) or value.dtype == object:
+            if field.startswith("_") or field in metadata or not isinstance(value, np.ndarray) or value.dtype == object:
                 continue
             other = getattr(regenerated, field)
             if value.shape != other.shape or not np.allclose(value, other, rtol=1e-5, atol=1e-6, equal_nan=True):
