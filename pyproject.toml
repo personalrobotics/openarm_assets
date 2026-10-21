@@ -30,6 +30,8 @@ where = ["src"]
 [tool.setuptools.package-data]
 openarm_assets = [
     "models/**/*.xml",
+    # build_openarm reads the URDF's rated torque and speed limits (urdf_limits), so a package without it cannot build a model.
+    "models/**/*.urdf",
     "models/**/*.stl",
     "models/**/*.obj",
     "models/**/*.png",
