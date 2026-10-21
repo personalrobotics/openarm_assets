@@ -243,6 +243,24 @@ def to_xml(spec: mujoco.MjSpec) -> str:
     return xml
 
 
+def narrow_joint_ranges(spec: mujoco.MjSpec, ranges: dict[str, tuple[float, float]]) -> None:
+    """Narrow joints' ranges to a robot's own: where this arm may go on the robot it is mounted on.
+
+    The arm's range is the arm's; a robot narrows it for what is around the arm (the opendubs head), and never widens it, so a range wider than
+    the joint's is refused. Call before `add_arm_actuators`: the position actuator's command range is the joint's.
+    """
+    for name, (lower, upper) in ranges.items():
+        joint = spec.joint(name)
+        if joint is None:
+            raise ValueError(f"no joint named {name!r}")
+        if not lower < upper:
+            raise ValueError(f"{name}: the range [{lower}, {upper}] is empty")
+        arm_lower, arm_upper = joint.range
+        if lower < arm_lower - 1e-9 or upper > arm_upper + 1e-9:
+            raise ValueError(f"{name}: the range [{lower}, {upper}] is wider than the arm's [{arm_lower}, {arm_upper}]")
+        joint.range = [lower, upper]
+
+
 def add_finger_exclude(spec: mujoco.MjSpec, left_finger: str, right_finger: str) -> None:
     """Exclude finger-finger self-collision at the closed position."""
     exclude = spec.add_exclude()
@@ -301,6 +319,7 @@ def build_openarm(
         src: Path | str = _DEFAULT_SRC, 
         sides: tuple[Side, ...] = ("left", "right"),
         gravcomp: bool = False,
+        joint_ranges: dict[str, tuple[float, float]] | None = None,
 ) -> mujoco.MjSpec:
     """Load the OpenArm scene and apply all decorations.
 
@@ -309,6 +328,8 @@ def build_openarm(
     controller (or a driver test) would never see the gravity the real arm has, which the
     controller has to cancel. Pass `gravcomp` for a weightless sim, as the impedance controller's
     onboard compensation made the real arm.
+
+    `joint_ranges` narrows named joints' ranges for a robot (see `narrow_joint_ranges`).
     """
 
     spec = mujoco.MjSpec.from_file(str(src))
@@ -325,9 +346,14 @@ def build_openarm(
     # regardless of which side(s) get decorated above, so the limit margin,
     # finger actuator fix and keyframe cover both arms -- not just `sides` --
     # to keep every output out of that singular pose and consistent across arms.
-    for side_name, s in _SIDES.items():
+    for s in _SIDES.values():
         widen_joint4_lower_limit(spec, s["joint4"])
         make_finger_actuators_position(spec, s["finger_actuators"])
+
+    # After the arm's own widening, and before the actuators, whose command range is the joint's.
+    narrow_joint_ranges(spec, joint_ranges or {})
+
+    for side_name in _SIDES:
         add_arm_actuators(spec, side_name)
     add_ready_keyframe(spec, [s["joint4"] for s in _SIDES.values()])
     add_gafro_annotations(spec, sides)
@@ -366,13 +392,22 @@ def main() -> None:
        help="Output XML path (default: generated/openarm_<sides>_decorated.xml).",
    )
    parser.add_argument(
+       "--joint-range", action="append", default=[], metavar="NAME=LOW,HIGH",
+       help="Narrow a joint's range, radians (repeatable): a robot's own limit, for what is around the arm. Never wider than the arm's.",
+   )
+   parser.add_argument(
        "--gravcomp", action="store_true",
        help="Turn on MuJoCo gravity compensation on the decorated arms (off by default; see build_openarm).",
    )
    args = parser.parse_args()
  
    sides = ("left", "right") if args.sides == "bimanual" else (args.sides,)
-   spec = build_openarm(args.src, sides=sides, gravcomp=args.gravcomp)
+   ranges = {}
+   for item in args.joint_range:
+       name, _, bounds = item.partition("=")
+       lower, _, upper = bounds.partition(",")
+       ranges[name] = (float(lower), float(upper))
+   spec = build_openarm(args.src, sides=sides, gravcomp=args.gravcomp, joint_ranges=ranges)
  
    # Sanity check: does it actually compile?
    model = spec.compile()

@@ -136,3 +136,31 @@ def test_joint_force_range_is_the_rating_and_bounds_the_sum_of_the_actuators(pai
     mujoco.mj_forward(model, data)
 
     assert abs(data.qfrc_actuator[model.jnt_dofadr[joint]]) <= effort + 1e-9
+
+
+def test_a_robot_can_narrow_a_joint_and_never_widen_it():
+    """A robot narrows the arm's range for what is around it; the range reaches the model, the position actuator and gafro's joint."""
+    from openarm_assets.assembly import build_openarm
+
+    narrowed = build_openarm(joint_ranges={"openarm_right_joint2": (-0.1745, 2.7402), "openarm_left_joint2": (-2.7402, 0.1745)}).compile()
+
+    for name, (lower, upper) in (("openarm_right_joint2", (-0.1745, 2.7402)), ("openarm_left_joint2", (-2.7402, 0.1745))):
+        joint = mujoco.mj_name2id(narrowed, mujoco.mjtObj.mjOBJ_JOINT, name)
+        assert narrowed.jnt_range[joint] == pytest.approx([lower, upper])
+
+        side = name.split("_")[1]
+        actuator = mujoco.mj_name2id(narrowed, mujoco.mjtObj.mjOBJ_ACTUATOR, f"{side}_joint2_position")
+        assert narrowed.actuator_ctrlrange[actuator] == pytest.approx([lower, upper])
+
+    # Other joints are the arm's.
+    right1 = mujoco.mj_name2id(narrowed, mujoco.mjtObj.mjOBJ_JOINT, "openarm_right_joint1")
+    assert narrowed.jnt_range[right1][1] == pytest.approx(3.490659, abs=1e-5)
+
+    with pytest.raises(ValueError, match="wider than the arm's"):
+        build_openarm(joint_ranges={"openarm_right_joint2": (-0.5, 2.7402)})
+    with pytest.raises(ValueError, match="wider than the arm's"):
+        build_openarm(joint_ranges={"openarm_right_joint2": (-0.1745, 3.5)})
+    with pytest.raises(ValueError, match="no joint named"):
+        build_openarm(joint_ranges={"openarm_right_joint9": (0.0, 1.0)})
+    with pytest.raises(ValueError, match="empty"):
+        build_openarm(joint_ranges={"openarm_right_joint2": (1.0, 1.0)})
