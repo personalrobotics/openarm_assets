@@ -11,6 +11,7 @@ import mujoco
 import numpy as np
 
 from openarm_assets import MODELS_DIR
+from openarm_assets import collision_cover as covers
 
 Side = Literal["left", "right"]
 
@@ -129,6 +130,27 @@ def add_gafro_annotations(spec: mujoco.MjSpec, sides: tuple[Side, ...]) -> None:
         chains = " ".join(_SIDES[side_name]["tcp_body"] for side_name in sides)
         groups = " ".join(f"{side_name}_arm" for side_name in sides)
         spec.add_text(name="gafro_task_space:bimanual", data=f"{chains};{groups}")
+
+
+def add_collision_cover(spec: mujoco.MjSpec, **options) -> covers.Cover:
+    """Write the robot's ball cover and the pairs of balls that can collide, for gafro's self-collision objective.
+
+    The cover is derived from the collision meshes (see `covers`) of the spec as it stands, so call this after
+    the joint ranges and the ready pose are final: the pairs are the ones that collide within those ranges. gafro reads
+    each ball as `gafro_collision_sphere:<name>` with data `<carrier> <x> <y> <z> <radius>` (the centre in the carrier body's frame),
+    and each pair as `gafro_collision_pair:<first>|<second>` with data `<first> <second>`. A ball's carrier is the tip of the
+    kinematic chain that carries it, so every carrier is declared as a chain, as the arm's tool body is.
+    `options` are those of `covers.generate`.
+    """
+    cover = covers.generate(spec.copy().compile(), **options)
+    for carrier in dict.fromkeys(ball.carrier for ball in cover.balls):
+        spec.add_text(name=f"gafro_kinematic_chain:{carrier}", data=f"{carrier};")
+    for ball in cover.balls:
+        x, y, z = ball.center
+        spec.add_text(name=f"gafro_collision_sphere:{ball.name}", data=f"{ball.carrier} {x!r} {y!r} {z!r} {ball.radius!r}")
+    for first, second in cover.pairs:
+        spec.add_text(name=f"gafro_collision_pair:{first}|{second}", data=f"{first} {second}")
+    return cover
 
 
 # Each arm joint has three actuators, one per command mode a gafro controller can run it in, in the actuator groups the gafro
@@ -342,6 +364,8 @@ def build_openarm(
         gravcomp: bool = False,
         joint_ranges: dict[str, tuple[float, float]] | None = None,
         ready: dict[str, float] | None = None,
+        collision_cover: bool = True,
+        collision_options: dict | None = None,
 ) -> mujoco.MjSpec:
     """Load the OpenArm scene and apply all decorations.
 
@@ -353,6 +377,10 @@ def build_openarm(
 
     `joint_ranges` narrows named joints' ranges for a robot (see `narrow_joint_ranges`); `ready` is the robot's own ready pose
     (joint name -> angle, the others at 0), in place of the arm's nearly straight one (see `add_ready_keyframe`).
+
+    `collision_cover` writes the ball cover and its pairs for gafro's self-collision objective (see `add_collision_cover`);
+    it is derived from the model as decorated here, so it follows `joint_ranges` and `ready`. `collision_options` are
+    `covers.generate`'s (`span`, `samples`, `redundancy`, ...).
     """
 
     spec = mujoco.MjSpec.from_file(str(src))
@@ -380,6 +408,8 @@ def build_openarm(
         add_arm_actuators(spec, side_name)
     add_ready_keyframe(spec, [s["joint4"] for s in _SIDES.values()], pose=ready)
     add_gafro_annotations(spec, sides)
+    if collision_cover:
+        add_collision_cover(spec, **(collision_options or {}))
 
     return spec
 
@@ -423,6 +453,15 @@ def main() -> None:
        help="The robot's own ready pose, radians, one joint per flag (repeatable); the others are at 0. Inside the joint's range.",
    )
    parser.add_argument(
+       "--collision-span", type=float, default=0.5,
+       help="Fraction of each joint's range the collision sweep samples, centred on ready (default 0.5; 1.0 is the whole range and "
+       "about three times as many pairs, which a controller pays for in every row; see collision_cover.sweep).",
+   )
+   parser.add_argument(
+       "--no-collision-cover", action="store_true",
+       help="Leave out the ball cover and collision pairs gafro's self-collision objective reads (see add_collision_cover).",
+   )
+   parser.add_argument(
        "--gravcomp", action="store_true",
        help="Turn on MuJoCo gravity compensation on the decorated arms (off by default; see build_openarm).",
    )
@@ -435,7 +474,8 @@ def main() -> None:
        lower, _, upper = bounds.partition(",")
        ranges[name] = (float(lower), float(upper))
    ready = {item.partition("=")[0]: float(item.partition("=")[2]) for item in args.ready} or None
-   spec = build_openarm(args.src, sides=sides, gravcomp=args.gravcomp, joint_ranges=ranges, ready=ready)
+   spec = build_openarm(args.src, sides=sides, gravcomp=args.gravcomp, joint_ranges=ranges, ready=ready, collision_cover=not args.no_collision_cover,
+                         collision_options={"span": args.collision_span})
  
    # Sanity check: does it actually compile?
    model = spec.compile()

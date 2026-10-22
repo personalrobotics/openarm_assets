@@ -190,3 +190,88 @@ def test_a_robot_can_give_its_own_ready_pose():
         build_openarm(ready={"openarm_right_joint6": 2.0})
     with pytest.raises(ValueError, match="no joint named"):
         build_openarm(ready={"openarm_right_joint9": 0.1})
+
+
+# -- the collision cover, as gafro reads it -------------------------------------------------------------------------------------
+
+needs_cover = pytest.mark.skipif(not hasattr(gafro, "CollisionSphere"), reason="this gafro predates the model's collision cover")
+
+
+@needs_cover
+def test_the_model_carries_the_cover_gafro_reads(pair):
+    system = pair["system"]
+
+    spheres, pairs = system.get_collision_spheres(), system.get_collision_pairs()
+    assert spheres and pairs
+    assert len({s.name for s in spheres}) == len(spheres)
+    for sphere in spheres:
+        assert sphere.radius > 0
+        # Every ball rides on a chain the model declares, so an objective can resolve it.
+        assert system.has_kinematic_chain(sphere.chain)
+    names = {s.name for s in spheres}
+    assert all(p.first in names and p.second in names for p in pairs)
+
+
+def _ball_centre(pair, data, sphere):
+    model = pair["model"]
+    body = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, sphere.chain)
+    return data.xpos[body] + data.xmat[body].reshape(3, 3) @ np.asarray(sphere.offset)
+
+
+def _state(system, q):
+    state = gafro.control.SystemState(system.get_dof())
+    state.set_position(q), state.set_velocity(np.zeros(system.get_dof())), state.set_torque(np.zeros(system.get_dof()))
+    return state
+
+
+@needs_cover
+def test_gafro_places_every_ball_where_mujoco_does(pair):
+    """The cover's centres are in a carrier body's frame, and gafro's chain tip frame is the MuJoCo body frame, so the clearance of
+    a pair is the same number from either side."""
+    system = pair["system"]
+    spheres = {s.name: s for s in system.get_collision_spheres()}
+    pairs = system.get_collision_pairs()
+    objective = gafro.objective.SelfCollisionObjective(system, system.get_task_space("bimanual"), 0.02)
+
+    for q, data in _configurations(pair):
+        expected = [
+            np.linalg.norm(_ball_centre(pair, data, spheres[p.first]) - _ball_centre(pair, data, spheres[p.second]))
+            - spheres[p.first].radius
+            - spheres[p.second].radius
+            for p in pairs
+        ]
+        np.testing.assert_allclose(objective.get_clearances(_state(system, q)), expected, atol=1e-9)
+
+
+@needs_cover
+def test_a_mesh_collision_is_a_ball_overlap_in_gafro(pair):
+    """Configurations MuJoCo says collide, sampled where the cover was built: gafro sees a listed pair of balls overlap in each,
+    except where the bodies in contact are a pair the sweep never saw (those are the sweep's limit; they have to be rare)."""
+    from openarm_assets import collision_cover as covers
+
+    model, system = pair["model"], pair["system"]
+    spheres = {s.name: s for s in system.get_collision_spheres()}
+    covered = {tuple(sorted((spheres[p.first].name.rsplit("_b", 1)[0], spheres[p.second].name.rsplit("_b", 1)[0]))) for p in system.get_collision_pairs()}
+    objective = gafro.objective.SelfCollisionObjective(system, system.get_task_space("bimanual"), 0.0)
+
+    rng = np.random.default_rng(21)
+    data = mujoco.MjData(model)
+    colliding = unseen = 0
+    for _ in range(6000):
+        covers._sample(model, data, rng, 0.5)
+        mujoco.mj_forward(model, data)
+        touching = {
+            tuple(sorted(mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, model.geom_bodyid[g]) for g in (c.geom1, c.geom2)))
+            for c in data.contact[: data.ncon]
+            if model.geom_group[c.geom1] == covers.COLLISION_GROUP and model.geom_group[c.geom2] == covers.COLLISION_GROUP and c.dist < 0
+        }
+        if not touching:
+            continue
+        colliding += 1
+        clearances = objective.get_clearances(_state(system, data.qpos[pair["qadr"]]))
+        if touching <= covered:
+            assert clearances.min() < 0.0, f"{sorted(touching)} touch and no listed pair of balls overlaps"
+        else:
+            unseen += 1
+    assert colliding > 20, "the sample found too few collisions to say anything"
+    assert unseen <= 0.05 * colliding
