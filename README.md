@@ -188,6 +188,7 @@ scene = mujoco.MjModel.from_xml_path(str(get_model_path().parent / "scene.xml"))
 - three actuators per arm joint, one per command mode: a `<motor>` (torque, group 1), a `<velocity>` servo (group 2) and a `<position>` servo (group 3), the groups gafro's robot interface switches between. The velocity command range and the torque limit are the arm's rated ones, from enactic's URDF (`<limit effort velocity>`); the assembly step checks that the URDF's effort matches the model's torque limit. The position and velocity gains are the ones the [openarm-driver](https://github.com/personalrobotics/openarm-driver) uses for the same modes on the arm (`ARM_KP`, `ARM_KD` in `assembly.py`); they are starting values, not tuned on an arm. Each actuator is limited to the joint's motor torque, and so is the joint's total (`actuatorfrcrange`): in plain MuJoCo the three act together, and without that limit a joint would deliver three times its rating
 - the names [gafro](https://github.com/personalrobotics/gafro) reads from an MJCF: a kinematic chain, a task space and a control group (`left_arm`, `right_arm`) per decorated arm; and the arm joints written as `<motor>` torque actuators, which is what makes gafro register a torque mode on them
 - *optionally* (`--gravcomp`) gravity compensation on each arm's kinematic subtree; **off by default**, since a weightless simulated arm hides the gravity a torque controller has to cancel
+- a collision cover for gafro's self-collision objective: a few balls per link that contain the link's collision mesh, and the pairs of balls that can collide, written as `gafro_collision_sphere:` and `gafro_collision_pair:` entries beside the chains (see [Collision Cover](#collision-cover))
 - a collision exclusion between each gripper's two fingers
 - a wider `joint4` lower limit
 - position-servo finger actuators on both arms (fixes the left arm's `<motor>` fingers)
@@ -210,6 +211,22 @@ python -m openarm_assets.assembly --sides left -o ./openarm_left.xml
 | `-o`, `--out` | Output path (default: `generated/openarm_<sides>_decorated.xml`) |
 
 The CLI compiles the model as a sanity check before writing it. If you write the output somewhere other than `generated/`, the mesh path (`../meshes`) will no longer resolve, so keep the output next to a `meshes/` directory or adjust `meshdir`.
+
+### Collision Cover
+
+gafro keeps one part of the robot clear of another with balls rather than meshes, so the model says what its balls are and which pairs of them can touch, and no controller has to. `openarm_assets.collision_cover` derives both from the collision meshes (geom group 3):
+
+- **Balls.** The triangles of each link are clustered and every cluster's ball contains all of its triangles, so a mesh contact is a ball overlap. A link gets about one ball per 10 cm, at most five, each fattened by 3 mm (MuJoCo collides the convex hull of a mesh, which sticks out of the mesh a little). A body that is rigid with the root (the arm bases) has its balls carried by the root, because gafro has no moving chain to carry them.
+- **Pairs.** Configurations are sampled uniformly over a fraction of each joint's range centred on the `ready` pose (`--collision-span`, default 0.5). A pair of bodies is listed when their meshes come within 2 cm of each other in some sample, and then the fewest pairs of their balls that overlap in every such sample, each sample covered twice. MuJoCo's exclusions (adjacent links, the vendor's overlapping link5 to link7) are not tested.
+
+The span is the one choice that matters, because a controller pays for every pair: a guard stage of about 80 pairs, the default, costs about 1.3 ms per control step; the whole range gives about 280 pairs and about eight. The cover sees what the sweep sees: a collision outside the sampled region, or between bodies that never came near in it (the two arms reaching each other, at the default span), is not listed.
+
+```bash
+python -m openarm_assets.assembly --sides bimanual --collision-span 1.0   # the whole range
+python -m openarm_assets.assembly --no-collision-cover                     # leave it out
+```
+
+`collision_cover.check_conservative` re-measures a cover on fresh samples: every configuration in which two meshes collide and no listed pair of their balls overlaps.
 
 ### Python API
 
