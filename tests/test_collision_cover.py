@@ -18,7 +18,8 @@ def cover(model):
     return covers.generate(model)
 
 
-def test_every_collision_triangle_lies_inside_one_ball_of_its_body(model, cover):
+def test_every_point_of_every_collision_surface_lies_inside_a_ball_of_its_body(model, cover):
+    """The union of a body's balls contains its collision surface: its triangles, split finely, have every vertex and centre inside one."""
     triangles = covers.collision_triangles(model)
     for body, mesh in triangles.items():
         name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, body)
@@ -34,9 +35,10 @@ def test_every_collision_triangle_lies_inside_one_ball_of_its_body(model, cover)
             mujoco.mj_kinematics(model, data)
             world = mesh @ data.xmat[body].reshape(3, 3).T + data.xpos[body]
             mesh = (world - data.xpos[carrier]) @ data.xmat[carrier].reshape(3, 3)
-        # A ball is convex, so a triangle is inside it when its three vertices are.
-        inside = (np.linalg.norm(mesh[:, :, None, :] - centres[None, None], axis=3) <= radii[None, None]).all(axis=1).any(axis=1)
-        assert inside.all(), f"{name}: {np.count_nonzero(~inside)} triangles outside every ball"
+        fine = covers.subdivide(mesh, 0.02)
+        points = np.concatenate([mesh.reshape(-1, 3), mesh.mean(axis=1), fine.reshape(-1, 3), fine.mean(axis=1)])
+        inside = (np.linalg.norm(points[:, None, :] - centres[None], axis=2) <= radii[None]).any(axis=1)
+        assert inside.all(), f"{name}: {np.count_nonzero(~inside)} of {len(points)} surface points outside every ball"
 
 
 def test_balls_are_named_once_and_few(model, cover):
@@ -44,7 +46,7 @@ def test_balls_are_named_once_and_few(model, cover):
     assert len(set(names)) == len(names)
     assert all(ball.radius > 0 and " " not in ball.name for ball in cover.balls)
     bodies = {ball.body for ball in cover.balls}
-    assert len(cover.balls) <= 5 * len(bodies)
+    assert len(cover.balls) <= 8 * len(bodies)
 
 
 def test_the_pairs_are_the_ones_that_collide_and_none_that_cannot(model, cover):
@@ -119,3 +121,42 @@ def test_the_model_carries_the_cover_it_was_built_with():
 def test_it_can_be_left_out():
     spec = build_openarm(collision_cover=False)
     assert not [t for t in spec.texts if t.name.startswith("gafro_collision")]
+
+
+def test_subdividing_keeps_the_surface_and_shortens_every_edge():
+    rng = np.random.default_rng(0)
+    triangles = rng.uniform(-1.0, 1.0, size=(20, 3, 3))
+    triangles[0] = [[0, 0, 0], [0.01, 0, 0], [0.005, 0.7, 0]]  # a sliver down the side of a pole
+
+    def area(t):
+        return 0.5 * np.linalg.norm(np.cross(t[:, 1] - t[:, 0], t[:, 2] - t[:, 0]), axis=1).sum()
+
+    pieces = covers.subdivide(triangles, 0.1)
+    edges = np.linalg.norm(pieces[:, (1, 2, 0)] - pieces, axis=2)
+    assert edges.max() <= 0.1 + 1e-12
+    assert area(pieces) == pytest.approx(area(triangles))
+
+
+def test_no_ball_is_large_because_one_triangle_is_long(model, cover):
+    """A thin pole is covered by balls the size of the pole's width, not of its length (a strip of triangles down its side)."""
+    assert max(ball.radius for ball in cover.balls) < 0.12
+
+
+def test_nothing_in_the_list_overlaps_at_the_ready_pose(model, cover):
+    """A guard on a pair that overlaps at rest fires at every pose and drives the arm away from whatever it was asked to do."""
+    data = mujoco.MjData(model)
+    mujoco.mj_resetDataKeyframe(model, data, 0)
+    mujoco.mj_kinematics(model, data)
+    ball = {b.name: b for b in cover.balls}
+    clearance = [
+        np.linalg.norm(covers._center(model, data, ball[first]) - covers._center(model, data, ball[second])) - ball[first].radius - ball[second].radius
+        for first, second in cover.pairs
+    ]
+    assert min(clearance) > 0.0
+
+
+def test_rigidly_adjacent_bodies_are_left_out(model, cover):
+    """A link and the hand and fingers beyond it overlap at every pose; that is the model's construction, not a collision."""
+    assert ("openarm_left_link7", "openarm_left_hand") in cover.permanent
+    listed = {tuple(sorted((ball[first].body, ball[second].body))) for ball in [{b.name: b for b in cover.balls}] for first, second in cover.pairs}
+    assert not (listed & {tuple(sorted(pair)) for pair in cover.permanent})
