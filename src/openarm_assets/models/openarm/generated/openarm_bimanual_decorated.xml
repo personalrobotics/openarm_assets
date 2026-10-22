@@ -417,109 +417,127 @@
     <text name="gafro_kinematic_chain:openarm_right_hand" data="openarm_right_hand;"/>
     <text name="gafro_kinematic_chain:openarm_right_right_finger" data="openarm_right_right_finger;"/>
     <text name="gafro_kinematic_chain:openarm_right_left_finger" data="openarm_right_left_finger;"/>
-    <text name="gafro_collision_sphere:openarm_body_link0_b0" data="openarm_body_link0 -1.8231769752138612e-08 -9.033480915068056e-10 0.00799999999999724 0.04459799153499126"/>
-    <text name="gafro_collision_sphere:openarm_body_link0_b1" data="openarm_body_link0 -2.173552342965698e-09 -1.696156550040867e-08 0.7579999999999982 0.04459799153499077"/>
-    <text name="gafro_collision_sphere:openarm_body_link0_b2" data="openarm_body_link0 -0.008990895084385922 0.00010854939382176258 0.3836218905472609 0.38033531600088366"/>
-    <text name="gafro_collision_sphere:openarm_body_link0_b3" data="openarm_body_link0 8.726817878228709e-06 1.0599269821677044e-05 0.3823781094527335 0.38091716536727105"/>
-    <text name="gafro_collision_sphere:openarm_body_link0_b4" data="openarm_body_link0 0.015032007050196965 -1.3758680519442284e-05 0.3836218905472609 0.3800572042983562"/>
-    <text name="gafro_collision_sphere:openarm_left_link0_b0" data="openarm_body_link0 0.0014823492001164078 0.062480517270210624 0.7147735086747042 0.06413101534320202"/>
-    <text name="gafro_collision_sphere:openarm_left_link0_b1" data="openarm_body_link0 -0.00041557298517875483 0.06248002159525412 0.6815790233563861 0.06385279904649936"/>
-    <text name="gafro_collision_sphere:openarm_left_link1_b0" data="openarm_left_link1 0.0037951702424124678 -0.0013493838067866644 0.03638812961351915 0.06514877807855203"/>
-    <text name="gafro_collision_sphere:openarm_left_link1_b1" data="openarm_left_link1 0.006905944913783385 0.00023192061514529838 0.06050957858272838 0.05969837856998248"/>
-    <text name="gafro_collision_sphere:openarm_left_link2_b0" data="openarm_left_link2 0.02042966031740219 -0.0009625934270217959 0.03246072405221554 0.05945109567402567"/>
-    <text name="gafro_collision_sphere:openarm_left_link2_b1" data="openarm_left_link2 -0.0018132017872370518 0.00015076824447608883 0.0003853565244602618 0.05252313352556931"/>
-    <text name="gafro_collision_sphere:openarm_left_link3_b0" data="openarm_left_link3 -0.0057083128878352846 1.3931546929277217e-05 0.1121550779003114 0.08059052218464934"/>
-    <text name="gafro_collision_sphere:openarm_left_link3_b1" data="openarm_left_link3 -0.004220175901209883 0.0013706525813707803 0.03991792303515546 0.057957087983005376"/>
-    <text name="gafro_collision_sphere:openarm_left_link4_b0" data="openarm_left_link4 -0.003616636500516141 -0.04016934701655139 0.035762797616720556 0.07457914075958695"/>
-    <text name="gafro_collision_sphere:openarm_left_link4_b1" data="openarm_left_link4 -0.0033115339523847407 -0.022688782132977064 0.03605351450076398 0.07443696047691307"/>
-    <text name="gafro_collision_sphere:openarm_left_link5_b0" data="openarm_left_link5 0.0022561927889289783 -2.3246714985498542e-05 0.03661833698845504 0.051604258205908436"/>
-    <text name="gafro_collision_sphere:openarm_left_link5_b1" data="openarm_left_link5 0.00017366376668809372 -3.0223745996832557e-05 0.07336475012411191 0.07056436519167535"/>
-    <text name="gafro_collision_sphere:openarm_left_link6_b0" data="openarm_left_link6 -0.03733351287635781 0.0013491277712139246 -2.071970898080917e-05 0.04723086298178784"/>
-    <text name="gafro_collision_sphere:openarm_left_link7_b0" data="openarm_left_link7 -0.0013021970025026682 -0.020989270438109636 0.01724177990115119 0.04042110951313353"/>
-    <text name="gafro_collision_sphere:openarm_left_link7_b1" data="openarm_left_link7 2.727302844211947e-05 4.082812486359445e-05 0.06751590297000584 0.04230460612497745"/>
-    <text name="gafro_collision_sphere:openarm_left_hand_b0" data="openarm_left_hand 8.93986985028628e-07 0.00489334132483892 0.008241507918013875 0.08734327605200337"/>
-    <text name="gafro_collision_sphere:openarm_left_hand_b1" data="openarm_left_hand 1.1695386946853915e-06 0.005108158551851924 0.008241750615145788 0.08734478258724022"/>
-    <text name="gafro_collision_sphere:openarm_left_right_finger_b0" data="openarm_left_right_finger 0.011182167655213212 -0.010058728070498247 0.03232960785225125 0.055515408324855305"/>
-    <text name="gafro_collision_sphere:openarm_left_left_finger_b0" data="openarm_left_left_finger 0.011182167655213205 0.010058728070498298 0.032329607852251585 0.05551540832485531"/>
-    <text name="gafro_collision_sphere:openarm_right_link0_b0" data="openarm_body_link0 0.001482349200116414 -0.06248051727021061 0.7147735086747042 0.06413101534320201"/>
-    <text name="gafro_collision_sphere:openarm_right_link0_b1" data="openarm_body_link0 -0.00041557298517874854 -0.062480021595254134 0.6815790233563861 0.06385279904649936"/>
-    <text name="gafro_collision_sphere:openarm_right_link1_b0" data="openarm_right_link1 0.0037951702424124686 0.001349383806786667 0.03638812961351915 0.06514877807855202"/>
-    <text name="gafro_collision_sphere:openarm_right_link1_b1" data="openarm_right_link1 0.006905944913783388 -0.00023192061514529754 0.06050957858272838 0.059698378569982474"/>
-    <text name="gafro_collision_sphere:openarm_right_link2_b0" data="openarm_right_link2 0.020429660317402197 0.0009625934270218018 0.03246072405221561 0.059451095674025685"/>
-    <text name="gafro_collision_sphere:openarm_right_link2_b1" data="openarm_right_link2 -0.0018132017872370396 -0.00015076824447608412 0.00038535652446030884 0.05252313352556932"/>
-    <text name="gafro_collision_sphere:openarm_right_link3_b0" data="openarm_right_link3 -0.005708312887835281 -1.3931546929277217e-05 0.1121550779003114 0.08059052218464934"/>
-    <text name="gafro_collision_sphere:openarm_right_link3_b1" data="openarm_right_link3 -0.004220175901209879 -0.001370652581370779 0.03991792303515548 0.05795708798300536"/>
-    <text name="gafro_collision_sphere:openarm_right_link4_b0" data="openarm_right_link4 -0.003616636500516141 -0.04016934701655139 0.035762797616720556 0.07457914075958695"/>
-    <text name="gafro_collision_sphere:openarm_right_link4_b1" data="openarm_right_link4 -0.0033115339523847407 -0.022688782132977064 0.03605351450076398 0.07443696047691307"/>
-    <text name="gafro_collision_sphere:openarm_right_link5_b0" data="openarm_right_link5 0.002256192788928977 2.324671498549598e-05 0.0366183369884551 0.051604258205908436"/>
-    <text name="gafro_collision_sphere:openarm_right_link5_b1" data="openarm_right_link5 0.0001736637666880963 3.0223745996832096e-05 0.07336475012411196 0.07056436519167536"/>
-    <text name="gafro_collision_sphere:openarm_right_link6_b0" data="openarm_right_link6 -0.037333512876357805 -0.001349127771213923 -2.0719708980919802e-05 0.04723086298178784"/>
-    <text name="gafro_collision_sphere:openarm_right_link7_b0" data="openarm_right_link7 -0.0013021970025026617 0.020989270438109657 0.017241779901151413 0.04042110951313353"/>
-    <text name="gafro_collision_sphere:openarm_right_link7_b1" data="openarm_right_link7 2.7273028442121286e-05 -4.0828124863602e-05 0.06751590297000605 0.04230460612497743"/>
-    <text name="gafro_collision_sphere:openarm_right_hand_b0" data="openarm_right_hand 8.93986985028628e-07 0.00489334132483892 0.008241507918013875 0.08734327605200337"/>
-    <text name="gafro_collision_sphere:openarm_right_hand_b1" data="openarm_right_hand 1.1695386946853915e-06 0.005108158551851924 0.008241750615145788 0.08734478258724022"/>
-    <text name="gafro_collision_sphere:openarm_right_right_finger_b0" data="openarm_right_right_finger 0.011182167655213212 -0.010058728070498247 0.03232960785225125 0.055515408324855305"/>
-    <text name="gafro_collision_sphere:openarm_right_left_finger_b0" data="openarm_right_left_finger 0.011182167655213205 0.010058728070498298 0.032329607852251585 0.05551540832485531"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_left_link4_b0" data="openarm_body_link0_b2 openarm_left_link4_b0"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_left_link4_b1" data="openarm_body_link0_b2 openarm_left_link4_b1"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_left_link5_b0" data="openarm_body_link0_b2 openarm_left_link5_b0"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_left_link5_b1" data="openarm_body_link0_b2 openarm_left_link5_b1"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_left_link6_b0" data="openarm_body_link0_b2 openarm_left_link6_b0"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_left_link6_b0" data="openarm_body_link0_b3 openarm_left_link6_b0"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_left_link7_b0" data="openarm_body_link0_b2 openarm_left_link7_b0"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_left_link7_b1" data="openarm_body_link0_b2 openarm_left_link7_b1"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_left_hand_b0" data="openarm_body_link0_b2 openarm_left_hand_b0"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_left_hand_b1" data="openarm_body_link0_b2 openarm_left_hand_b1"/>
+    <text name="gafro_collision_sphere:openarm_body_link0_b0" data="openarm_body_link0 -1.3649569646756975e-09 1.875964885007537e-09 0.2658310086472424 0.08471194981271193"/>
+    <text name="gafro_collision_sphere:openarm_body_link0_b1" data="openarm_body_link0 -7.72371980449168e-09 1.0918998843273669e-08 0.7345523223005331 0.05075129799720465"/>
+    <text name="gafro_collision_sphere:openarm_body_link0_b2" data="openarm_body_link0 9.066571179700174e-09 -1.3591635069563858e-08 0.05489775339897986 0.06568805612614469"/>
+    <text name="gafro_collision_sphere:openarm_body_link0_b3" data="openarm_body_link0 1.6103424864465175e-09 -2.215952853395868e-09 0.5118977339426499 0.07486527385467259"/>
+    <text name="gafro_collision_sphere:openarm_body_link0_b4" data="openarm_body_link0 -1.6828236555437547e-10 2.3018297280719656e-10 0.39473765163906743 0.07487374158760648"/>
+    <text name="gafro_collision_sphere:openarm_body_link0_b5" data="openarm_body_link0 8.185734805727946e-07 9.930831110695356e-07 0.1602913368762216 0.07490048427878106"/>
+    <text name="gafro_collision_sphere:openarm_body_link0_b6" data="openarm_body_link0 -6.593436185459113e-09 9.066671977379839e-09 0.6173690709587686 0.06567546731557955"/>
+    <text name="gafro_collision_sphere:openarm_body_link0_b7" data="openarm_body_link0 -8.224321858921223e-07 -9.877787589009622e-07 0.6760094988765858 0.05748977734157696"/>
+    <text name="gafro_collision_sphere:openarm_left_link0_b0" data="openarm_body_link0 0.001006394438296551 0.06223397436603783 0.7148020701646728 0.06409895022403173"/>
+    <text name="gafro_collision_sphere:openarm_left_link0_b1" data="openarm_body_link0 -0.0010350511171187996 0.060988373230485365 0.6817834891557945 0.06387639906873609"/>
+    <text name="gafro_collision_sphere:openarm_left_link1_b0" data="openarm_left_link1 0.006910574911760497 4.030040569270242e-05 0.06050175339754834 0.05953663662267616"/>
+    <text name="gafro_collision_sphere:openarm_left_link1_b1" data="openarm_left_link1 0.004597355135451741 0.0029895848098127026 0.032563741763369076 0.06407268107927717"/>
+    <text name="gafro_collision_sphere:openarm_left_link2_b0" data="openarm_left_link2 0.02188038305032096 0.0019767526840713456 0.03629047623673199 0.0561662600832541"/>
+    <text name="gafro_collision_sphere:openarm_left_link2_b1" data="openarm_left_link2 -0.0018768633541324572 9.055158819909348e-05 0.00041574111317085877 0.052454848427411736"/>
+    <text name="gafro_collision_sphere:openarm_left_link3_b0" data="openarm_left_link3 -0.004197957980347768 -0.0009499316064590614 0.041295614393158514 0.0587039023791357"/>
+    <text name="gafro_collision_sphere:openarm_left_link3_b1" data="openarm_left_link3 -0.014042747119659 0.00013358772782408272 0.12450503295900835 0.0722304104675374"/>
+    <text name="gafro_collision_sphere:openarm_left_link4_b0" data="openarm_left_link4 -0.004036503497159187 -0.04592690729871321 0.03792156702304466 0.07405503883328841"/>
+    <text name="gafro_collision_sphere:openarm_left_link4_b1" data="openarm_left_link4 -0.0033077469989406523 -0.01658411424369134 0.03789671898901467 0.07384035759036851"/>
+    <text name="gafro_collision_sphere:openarm_left_link5_b0" data="openarm_left_link5 0.0021926707885864226 -7.141028241827293e-05 0.034441890067821467 0.050164627972037065"/>
+    <text name="gafro_collision_sphere:openarm_left_link5_b1" data="openarm_left_link5 -2.2815845440187806e-05 -0.0001152981950432857 0.07906112996353917 0.0660345215932208"/>
+    <text name="gafro_collision_sphere:openarm_left_link6_b0" data="openarm_left_link6 -0.03740723598188684 0.001401440515917472 -1.1275095197785977e-05 0.04721006710842432"/>
+    <text name="gafro_collision_sphere:openarm_left_link7_b0" data="openarm_left_link7 3.936485338270501e-05 3.633229894240202e-05 0.06750732401278584 0.04230182686444938"/>
+    <text name="gafro_collision_sphere:openarm_left_link7_b1" data="openarm_left_link7 -0.0009203327664170605 -0.02653380563939502 0.021087163410181086 0.042411170038263786"/>
+    <text name="gafro_collision_sphere:openarm_left_hand_b0" data="openarm_left_hand 0.0005917545828308293 -0.027690492154602744 0.0025663226221010853 0.05527644074353571"/>
+    <text name="gafro_collision_sphere:openarm_left_hand_b1" data="openarm_left_hand -0.00011106455801084499 0.03758850172278901 0.0019226537734432767 0.05542918623913223"/>
+    <text name="gafro_collision_sphere:openarm_left_right_finger_b0" data="openarm_left_right_finger 0.011139620088426104 -0.01006551842306588 0.03229603167253881 0.05553595967916051"/>
+    <text name="gafro_collision_sphere:openarm_left_left_finger_b0" data="openarm_left_left_finger 0.011139620088426097 0.010065518423065925 0.032296031672539145 0.055535959679160515"/>
+    <text name="gafro_collision_sphere:openarm_right_link0_b0" data="openarm_body_link0 0.0044793573552333816 -0.06223960893273863 0.7119048686041626 0.06750941993131963"/>
+    <text name="gafro_collision_sphere:openarm_right_link0_b1" data="openarm_body_link0 -0.005545846839751802 -0.06098295264936966 0.6836760100998704 0.06733723533555724"/>
+    <text name="gafro_collision_sphere:openarm_right_link1_b0" data="openarm_right_link1 0.006641549298668366 -2.9746111925189233e-05 0.06059310743126717 0.059553049923416604"/>
+    <text name="gafro_collision_sphere:openarm_right_link1_b1" data="openarm_right_link1 0.004596540507209339 -0.002988929686283413 0.03256322450620782 0.06407153899721832"/>
+    <text name="gafro_collision_sphere:openarm_right_link2_b0" data="openarm_right_link2 0.021880383050320952 -0.0019767526840713413 0.036290476236732046 0.056166260083254094"/>
+    <text name="gafro_collision_sphere:openarm_right_link2_b1" data="openarm_right_link2 -0.001876863354132445 -9.055158819908896e-05 0.00041574111317090566 0.05245484842741174"/>
+    <text name="gafro_collision_sphere:openarm_right_link3_b0" data="openarm_right_link3 -0.014042747119659 -0.00013358772782408277 0.12450503295900835 0.0722304104675374"/>
+    <text name="gafro_collision_sphere:openarm_right_link3_b1" data="openarm_right_link3 -0.004197957980347766 0.000949931606459062 0.041295614393158514 0.05870390237913569"/>
+    <text name="gafro_collision_sphere:openarm_right_link4_b0" data="openarm_right_link4 -0.004036503497159187 -0.04592690729871321 0.03792156702304466 0.07405503883328841"/>
+    <text name="gafro_collision_sphere:openarm_right_link4_b1" data="openarm_right_link4 -0.0033077469989406523 -0.01658411424369134 0.03789671898901467 0.07384035759036851"/>
+    <text name="gafro_collision_sphere:openarm_right_link5_b0" data="openarm_right_link5 0.0021926707885864235 7.141028241827032e-05 0.03444189006782152 0.05016462797203707"/>
+    <text name="gafro_collision_sphere:openarm_right_link5_b1" data="openarm_right_link5 -2.2815845440186234e-05 0.00011529819504328284 0.07906112996353923 0.06603452159322079"/>
+    <text name="gafro_collision_sphere:openarm_right_link6_b0" data="openarm_right_link6 -0.03740723598188683 -0.0014014405159174718 -1.1275095197896606e-05 0.04721006710842431"/>
+    <text name="gafro_collision_sphere:openarm_right_link7_b0" data="openarm_right_link7 -0.0007202018408569912 0.02493078511515319 0.021807301782773268 0.04346128152851751"/>
+    <text name="gafro_collision_sphere:openarm_right_link7_b1" data="openarm_right_link7 3.9175518342955814e-05 -2.6724165879704893e-05 0.06751022480162654 0.04229927214831683"/>
+    <text name="gafro_collision_sphere:openarm_right_hand_b0" data="openarm_right_hand 0.0005917545828308293 -0.027690492154602744 0.0025663226221010853 0.05527644074353571"/>
+    <text name="gafro_collision_sphere:openarm_right_hand_b1" data="openarm_right_hand -0.00011106455801084499 0.03758850172278901 0.0019226537734432767 0.05542918623913223"/>
+    <text name="gafro_collision_sphere:openarm_right_right_finger_b0" data="openarm_right_right_finger 0.011139620088426104 -0.01006551842306588 0.03229603167253881 0.05553595967916051"/>
+    <text name="gafro_collision_sphere:openarm_right_left_finger_b0" data="openarm_right_left_finger 0.011139620088426097 0.010065518423065925 0.032296031672539145 0.055535959679160515"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_left_link4_b0" data="openarm_body_link0_b3 openarm_left_link4_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_left_link4_b1" data="openarm_body_link0_b3 openarm_left_link4_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_left_link5_b1" data="openarm_body_link0_b0 openarm_left_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_left_link5_b0" data="openarm_body_link0_b4 openarm_left_link5_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_left_link6_b0" data="openarm_body_link0_b0 openarm_left_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_left_link6_b0" data="openarm_body_link0_b4 openarm_left_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b5|openarm_left_link6_b0" data="openarm_body_link0_b5 openarm_left_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_left_link7_b0" data="openarm_body_link0_b0 openarm_left_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_left_link7_b1" data="openarm_body_link0_b0 openarm_left_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_left_link7_b0" data="openarm_body_link0_b4 openarm_left_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_left_hand_b0" data="openarm_body_link0_b0 openarm_left_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_left_hand_b1" data="openarm_body_link0_b0 openarm_left_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b5|openarm_left_hand_b1" data="openarm_body_link0_b5 openarm_left_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_left_right_finger_b0" data="openarm_body_link0_b0 openarm_left_right_finger_b0"/>
     <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_left_right_finger_b0" data="openarm_body_link0_b2 openarm_left_right_finger_b0"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_left_right_finger_b0" data="openarm_body_link0_b3 openarm_left_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_left_right_finger_b0" data="openarm_body_link0_b4 openarm_left_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b5|openarm_left_right_finger_b0" data="openarm_body_link0_b5 openarm_left_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_left_left_finger_b0" data="openarm_body_link0_b0 openarm_left_left_finger_b0"/>
     <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_left_left_finger_b0" data="openarm_body_link0_b2 openarm_left_left_finger_b0"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_left_left_finger_b0" data="openarm_body_link0_b3 openarm_left_left_finger_b0"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_right_link4_b0" data="openarm_body_link0_b2 openarm_right_link4_b0"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_right_link4_b1" data="openarm_body_link0_b2 openarm_right_link4_b1"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_right_link5_b0" data="openarm_body_link0_b2 openarm_right_link5_b0"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_right_link5_b1" data="openarm_body_link0_b2 openarm_right_link5_b1"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_right_link6_b0" data="openarm_body_link0_b2 openarm_right_link6_b0"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_right_link6_b0" data="openarm_body_link0_b3 openarm_right_link6_b0"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_right_link7_b0" data="openarm_body_link0_b2 openarm_right_link7_b0"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_right_link7_b1" data="openarm_body_link0_b2 openarm_right_link7_b1"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_right_hand_b0" data="openarm_body_link0_b2 openarm_right_hand_b0"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_right_hand_b1" data="openarm_body_link0_b2 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_left_left_finger_b0" data="openarm_body_link0_b4 openarm_left_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b5|openarm_left_left_finger_b0" data="openarm_body_link0_b5 openarm_left_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_right_link4_b0" data="openarm_body_link0_b3 openarm_right_link4_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_right_link4_b1" data="openarm_body_link0_b3 openarm_right_link4_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_right_link5_b0" data="openarm_body_link0_b4 openarm_right_link5_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_right_link5_b1" data="openarm_body_link0_b4 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_right_link6_b0" data="openarm_body_link0_b0 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_right_link6_b0" data="openarm_body_link0_b4 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b5|openarm_right_link6_b0" data="openarm_body_link0_b5 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_right_link7_b0" data="openarm_body_link0_b0 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_right_link7_b1" data="openarm_body_link0_b0 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_right_link7_b1" data="openarm_body_link0_b4 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_right_hand_b0" data="openarm_body_link0_b0 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_right_hand_b1" data="openarm_body_link0_b0 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_right_hand_b0" data="openarm_body_link0_b4 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b5|openarm_right_hand_b0" data="openarm_body_link0_b5 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_right_right_finger_b0" data="openarm_body_link0_b0 openarm_right_right_finger_b0"/>
     <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_right_right_finger_b0" data="openarm_body_link0_b2 openarm_right_right_finger_b0"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_right_right_finger_b0" data="openarm_body_link0_b3 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_right_right_finger_b0" data="openarm_body_link0_b4 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b5|openarm_right_right_finger_b0" data="openarm_body_link0_b5 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_right_left_finger_b0" data="openarm_body_link0_b0 openarm_right_left_finger_b0"/>
     <text name="gafro_collision_pair:openarm_body_link0_b2|openarm_right_left_finger_b0" data="openarm_body_link0_b2 openarm_right_left_finger_b0"/>
-    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_right_left_finger_b0" data="openarm_body_link0_b3 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_right_left_finger_b0" data="openarm_body_link0_b4 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b5|openarm_right_left_finger_b0" data="openarm_body_link0_b5 openarm_right_left_finger_b0"/>
     <text name="gafro_collision_pair:openarm_left_link5_b0|openarm_right_link7_b1" data="openarm_left_link5_b0 openarm_right_link7_b1"/>
     <text name="gafro_collision_pair:openarm_left_link5_b1|openarm_right_link7_b1" data="openarm_left_link5_b1 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b0|openarm_right_hand_b0" data="openarm_left_link5_b0 openarm_right_hand_b0"/>
     <text name="gafro_collision_pair:openarm_left_link5_b1|openarm_right_hand_b0" data="openarm_left_link5_b1 openarm_right_hand_b0"/>
-    <text name="gafro_collision_pair:openarm_left_link5_b1|openarm_right_hand_b1" data="openarm_left_link5_b1 openarm_right_hand_b1"/>
     <text name="gafro_collision_pair:openarm_left_link5_b0|openarm_right_right_finger_b0" data="openarm_left_link5_b0 openarm_right_right_finger_b0"/>
     <text name="gafro_collision_pair:openarm_left_link5_b1|openarm_right_right_finger_b0" data="openarm_left_link5_b1 openarm_right_right_finger_b0"/>
     <text name="gafro_collision_pair:openarm_left_link5_b0|openarm_right_left_finger_b0" data="openarm_left_link5_b0 openarm_right_left_finger_b0"/>
     <text name="gafro_collision_pair:openarm_left_link5_b1|openarm_right_left_finger_b0" data="openarm_left_link5_b1 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_link7_b0" data="openarm_left_link6_b0 openarm_right_link7_b0"/>
     <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_link7_b1" data="openarm_left_link6_b0 openarm_right_link7_b1"/>
     <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_hand_b0" data="openarm_left_link6_b0 openarm_right_hand_b0"/>
     <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_hand_b1" data="openarm_left_link6_b0 openarm_right_hand_b1"/>
     <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_right_finger_b0" data="openarm_left_link6_b0 openarm_right_right_finger_b0"/>
     <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_left_finger_b0" data="openarm_left_link6_b0 openarm_right_left_finger_b0"/>
-    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_left_hand_b0" data="openarm_left_link7_b0 openarm_left_hand_b0"/>
-    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_left_hand_b1" data="openarm_left_link7_b0 openarm_left_hand_b1"/>
-    <text name="gafro_collision_pair:openarm_left_link7_b1|openarm_left_right_finger_b0" data="openarm_left_link7_b1 openarm_left_right_finger_b0"/>
-    <text name="gafro_collision_pair:openarm_left_link7_b1|openarm_left_left_finger_b0" data="openarm_left_link7_b1 openarm_left_left_finger_b0"/>
-    <text name="gafro_collision_pair:openarm_left_link7_b1|openarm_right_link6_b0" data="openarm_left_link7_b1 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_link6_b0" data="openarm_left_link7_b0 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_hand_b0" data="openarm_left_link7_b0 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_hand_b1" data="openarm_left_link7_b0 openarm_right_hand_b1"/>
     <text name="gafro_collision_pair:openarm_left_link7_b1|openarm_right_hand_b0" data="openarm_left_link7_b1 openarm_right_hand_b0"/>
-    <text name="gafro_collision_pair:openarm_left_link7_b1|openarm_right_hand_b1" data="openarm_left_link7_b1 openarm_right_hand_b1"/>
     <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_right_finger_b0" data="openarm_left_link7_b0 openarm_right_right_finger_b0"/>
     <text name="gafro_collision_pair:openarm_left_link7_b1|openarm_right_right_finger_b0" data="openarm_left_link7_b1 openarm_right_right_finger_b0"/>
     <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_left_finger_b0" data="openarm_left_link7_b0 openarm_right_left_finger_b0"/>
     <text name="gafro_collision_pair:openarm_left_link7_b1|openarm_right_left_finger_b0" data="openarm_left_link7_b1 openarm_right_left_finger_b0"/>
-    <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_link5_b0" data="openarm_left_hand_b0 openarm_right_link5_b0"/>
     <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_link5_b1" data="openarm_left_hand_b0 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link5_b0" data="openarm_left_hand_b1 openarm_right_link5_b0"/>
     <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_link6_b0" data="openarm_left_hand_b0 openarm_right_link6_b0"/>
     <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link6_b0" data="openarm_left_hand_b1 openarm_right_link6_b0"/>
     <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_link7_b1" data="openarm_left_hand_b0 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link7_b0" data="openarm_left_hand_b1 openarm_right_link7_b0"/>
     <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link7_b1" data="openarm_left_hand_b1 openarm_right_link7_b1"/>
-    <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_hand_b0" data="openarm_left_hand_b0 openarm_right_hand_b0"/>
     <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_hand_b1" data="openarm_left_hand_b0 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_hand_b0" data="openarm_left_hand_b1 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_hand_b1" data="openarm_left_hand_b1 openarm_right_hand_b1"/>
     <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_right_finger_b0" data="openarm_left_hand_b0 openarm_right_right_finger_b0"/>
     <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_right_finger_b0" data="openarm_left_hand_b1 openarm_right_right_finger_b0"/>
     <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_left_finger_b0" data="openarm_left_hand_b0 openarm_right_left_finger_b0"/>
@@ -537,10 +555,6 @@
     <text name="gafro_collision_pair:openarm_left_left_finger_b0|openarm_right_hand_b1" data="openarm_left_left_finger_b0 openarm_right_hand_b1"/>
     <text name="gafro_collision_pair:openarm_left_left_finger_b0|openarm_right_right_finger_b0" data="openarm_left_left_finger_b0 openarm_right_right_finger_b0"/>
     <text name="gafro_collision_pair:openarm_left_left_finger_b0|openarm_right_left_finger_b0" data="openarm_left_left_finger_b0 openarm_right_left_finger_b0"/>
-    <text name="gafro_collision_pair:openarm_right_link7_b0|openarm_right_hand_b0" data="openarm_right_link7_b0 openarm_right_hand_b0"/>
-    <text name="gafro_collision_pair:openarm_right_link7_b0|openarm_right_hand_b1" data="openarm_right_link7_b0 openarm_right_hand_b1"/>
-    <text name="gafro_collision_pair:openarm_right_link7_b1|openarm_right_right_finger_b0" data="openarm_right_link7_b1 openarm_right_right_finger_b0"/>
-    <text name="gafro_collision_pair:openarm_right_link7_b1|openarm_right_left_finger_b0" data="openarm_right_link7_b1 openarm_right_left_finger_b0"/>
   </custom>
 
   <keyframe>

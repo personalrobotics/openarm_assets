@@ -6,7 +6,7 @@ robot has to say what its balls are and which pairs of them can touch. Both are 
 offline and written into the model beside the chains and task spaces (see `add_collision_cover`), so they live with the
 robot and not in each controller's configuration.
 
-The cover is built to be conservative: every triangle of a link's collision mesh lies inside one of its balls, so a
+The cover is built to be conservative: every point of a link's collision surface lies inside one of its balls, so a
 mesh contact is a ball overlap. MuJoCo collides the convex hull of a mesh, which can stick out of the mesh by a little;
 `inflate` is the allowance for that, and `check_conservative` is the sweep that shows whether it is enough.
 """
@@ -44,8 +44,8 @@ class Cover:
 
     balls: list[Ball]
     pairs: list[tuple[str, str]]
-    # Body pairs whose collision geometry overlaps in (nearly) every sampled configuration: the vendor meshes of
-    # link5 and link7, the two fingers of a hand. They are not collisions to avoid, so they are left out.
+    # Body pairs within the probe margin of each other in (nearly) every sampled configuration: a link and the hand beyond it,
+    # the two fingers of a hand. They are not collisions to avoid, so they are left out.
     permanent: list[tuple[str, str]] = field(default_factory=list)
     # Body pairs that collided in the sweep, each with the number of samples it did so in.
     colliding: dict[tuple[str, str], int] = field(default_factory=dict)
@@ -84,6 +84,31 @@ def _enclose(points: np.ndarray, iterations: int = 200) -> tuple[np.ndarray, flo
         farthest = points[np.argmax(np.linalg.norm(points - center, axis=1))]
         center = center + (farthest - center) / (step + 1)
     return center, float(np.linalg.norm(points - center, axis=1).max())
+
+
+def subdivide(triangles: np.ndarray, max_edge: float) -> np.ndarray:
+    """The same surface as triangles no edge of which is longer than `max_edge`, by splitting each across its longest edge.
+
+    A ball has to contain every vertex of the triangles it is given, so one long sliver (a strip down the side of a pole) forces
+    a ball as large as the sliver. The pieces together are the sliver, so covering them covers it."""
+    pending = [triangles]
+    done = []
+    while pending:
+        batch = pending.pop()
+        edges = np.stack([np.linalg.norm(batch[:, (i + 1) % 3] - batch[:, i], axis=1) for i in range(3)], axis=1)
+        longest = edges.argmax(axis=1)
+        short = edges.max(axis=1) <= max_edge
+        if short.any():
+            done.append(batch[short])
+        batch, longest = batch[~short], longest[~short]
+        if not len(batch):
+            continue
+        rows = np.arange(len(batch))
+        first, second, apex = batch[rows, longest], batch[rows, (longest + 1) % 3], batch[rows, (longest + 2) % 3]
+        middle = 0.5 * (first + second)
+        pending.append(np.stack([first, middle, apex], axis=1))
+        pending.append(np.stack([middle, second, apex], axis=1))
+    return np.concatenate(done) if done else triangles
 
 
 def fit_balls(triangles: np.ndarray, count: int, seed: int = 0) -> list[tuple[np.ndarray, float]]:
@@ -125,9 +150,10 @@ def _is_static(model: mujoco.MjModel, body: int, root: int) -> bool:
     return True
 
 
-def balls_for(model: mujoco.MjModel, target_length: float = 0.1, max_balls: int = 5, inflate: float = 0.003, seed: int = 0) -> list[Ball]:
+def balls_for(model: mujoco.MjModel, target_length: float = 0.1, max_balls: int = 8, inflate: float = 0.003, seed: int = 0) -> list[Ball]:
     """The cover of every body that has collision geometry: about one ball per `target_length` metres of the body's
-    longest extent, at most `max_balls`, each fattened by `inflate`. A body rigid with the root has its balls carried by
+    longest extent, at most `max_balls`, each fattened by `inflate`; long triangles are split to a quarter of `target_length`
+    first (see `subdivide`). A body rigid with the root has its balls carried by
     the root (see `Ball`)."""
     root = _root_body(model)
     data = mujoco.MjData(model)
@@ -141,7 +167,7 @@ def balls_for(model: mujoco.MjModel, target_length: float = 0.1, max_balls: int 
             rotation, position = data.xmat[body].reshape(3, 3), data.xpos[body]
             triangles = ((triangles @ rotation.T + position) - root_position) @ root_rotation
         count = int(np.clip(np.ceil(extent / target_length), 1, max_balls))
-        for index, (center, radius) in enumerate(fit_balls(triangles, count, seed)):
+        for index, (center, radius) in enumerate(fit_balls(subdivide(triangles, target_length / 4), count, seed)):
             balls.append(
                 Ball(
                     f"{_body_name(model, body)}_b{index}",
@@ -225,8 +251,8 @@ def sweep(
     `check_conservative` re-measures on fresh samples.
 
     `span` is the fraction of each joint's range sampled, centred on the ready pose, and it is the one choice that sets how
-    long the list is: half the range gives a few dozen pairs, the whole range about three times as many, and a controller pays
-    for every row (a stage of 80 rows costs about 1.3 ms, of 280 about 8 ms). The cover sees the collisions the sweep
+    long the list is: a quarter of the range gives about 50 pairs, half about 90, the whole range about 390, and a controller
+    pays for every row (a guard stage of 90 rows costs about 0.7 ms a step, of 390 about 16). The cover sees the collisions the sweep
     does, so a collision outside the sampled region, or a pair of bodies that never came near in it, is not listed."""
     data = mujoco.MjData(model)
     rng = np.random.default_rng(seed)
@@ -266,8 +292,10 @@ def sweep(
             events[pair][seen] = events[pair].get(seen, 0) + 1
 
     names = {body: _body_name(model, body) for body in by_body}
-    permanent = [(names[a], names[b]) for (a, b), count in colliding.items() if count >= permanent_fraction * samples]
-    live = [pair for pair in candidates if near[pair] > 0 and colliding[pair] < permanent_fraction * samples]
+    # A pair that is within the probe margin in (nearly) every sample is rigidly adjacent, a link and the hand beyond it: not a
+    # collision to avoid, and a guard on it would fire at every pose.
+    permanent = [(names[a], names[b]) for (a, b), count in near.items() if count >= permanent_fraction * samples]
+    live = [pair for pair in candidates if near[pair] > 0 and near[pair] < permanent_fraction * samples]
     pairs = [first_second for pair in live for first_second in _smallest_cover(events[pair], redundancy)]
     return Cover(
         balls=balls,
