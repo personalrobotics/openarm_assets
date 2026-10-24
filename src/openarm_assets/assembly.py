@@ -296,37 +296,52 @@ def add_finger_exclude(spec: mujoco.MjSpec, left_finger: str, right_finger: str)
     exclude.bodyname1 = left_finger
     exclude.bodyname2 = right_finger
 
-def add_ready_keyframe(spec: mujoco.MjSpec, joint4_names: list[str], joint4_pos: float = 0.3, pose: dict[str, float] | None = None) -> None:
-    """Add the "ready" keyframe: all joints at 0 except `joint4` on each
-    arm. joint4's range is [0, 2.44346] (see hw_validation/joint_limits.yaml),
-    so 0 sits exactly on its lower limit -- a singular pose for planning to
-    start from. `joint4_pos` keeps it clear of that limit instead.
+# The pose the arms work from: the elbow bent and the wrist turned in, away from the straight, singular arm. `ready` is this unless a robot
+# gives its own. It is the pose a controller that tracks a hand target is tuned to start from (opendubs' `track`): from the near-stow pose
+# below, a target a few centimetres lower is nearly singular and the arm stops short of it. Joints not listed are at 0. The left arm is the
+# right's mirror image: joints 2 and 3 flip sign, the others are equal.
+READY_POSE: dict[str, float] = {
+    "openarm_left_joint2": -0.7, "openarm_left_joint3": 0.5, "openarm_left_joint4": 1.8,
+    "openarm_left_joint5": -1.0, "openarm_left_joint6": -0.1, "openarm_left_joint7": -0.55,
+    "openarm_right_joint2": 0.7, "openarm_right_joint3": -0.5, "openarm_right_joint4": 1.8,
+    "openarm_right_joint5": -1.0, "openarm_right_joint6": -0.1, "openarm_right_joint7": -0.55,
+}
 
-    That is only clear of the limit, and still nearly singular (the elbow is almost straight). A robot that works from a
-    ready pose gives its own as `pose`: joint name -> angle, the others at 0.
-    """
-    model = spec.compile()
+
+def _pose_qpos(model: mujoco.MjModel, pose: dict[str, float]) -> np.ndarray:
+    """The joint positions of `pose` (joint name -> angle), the others at 0; refuses an unknown joint or a value outside its range."""
     qpos = np.zeros(model.nq)
-    for name in joint4_names:
+    for name, value in pose.items():
         jid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name)
         if jid < 0:
-            raise RuntimeError(f"No joint named {name!r} in this spec")
-        qpos[model.jnt_qposadr[jid]] = joint4_pos
+            raise ValueError(f"no joint named {name!r}")
+        low, high = model.jnt_range[jid]
+        if not low - 1e-9 <= value <= high + 1e-9:
+            raise ValueError(f"{name}: {value} is outside the joint's range [{low}, {high}]")
+        qpos[model.jnt_qposadr[jid]] = value
+    return qpos
 
-    if pose is not None:
-        qpos[:] = 0.0
-        for name, value in pose.items():
-            jid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name)
-            if jid < 0:
-                raise ValueError(f"no joint named {name!r}")
-            low, high = model.jnt_range[jid]
-            if not low - 1e-9 <= value <= high + 1e-9:
-                raise ValueError(f"{name}: {value} is outside the joint's range [{low}, {high}]")
-            qpos[model.jnt_qposadr[jid]] = value
 
-    key = spec.add_key()
-    key.name = "ready"
-    key.qpos = qpos
+def add_ready_keyframe(spec: mujoco.MjSpec, joint4_names: list[str], joint4_pos: float = 0.3, pose: dict[str, float] | None = None) -> None:
+    """Add two keyframes: "ready", the pose the arms work from, and "rest", the near-stow pose.
+
+    `ready` is READY_POSE, or `pose` (joint name -> angle, the others at 0) when a robot gives its own. A simulation starts in the first
+    keyframe, so this is where a bridge or a controller begins; see READY_POSE for why it is not the straight arm.
+
+    `rest` is all joints at 0 except `joint4` on each arm at `joint4_pos`. joint4's range is [0, 2.44346] (see
+    hw_validation/joint_limits.yaml), so 0 sits exactly on its lower limit -- a singular pose for planning to start from -- and
+    `joint4_pos` keeps it clear of that limit. That is only clear of the limit and still nearly singular (the elbow is almost
+    straight): the arm's pose at rest, not one to work from.
+    """
+    model = spec.compile()
+
+    ready = spec.add_key()
+    ready.name = "ready"
+    ready.qpos = _pose_qpos(model, READY_POSE if pose is None else pose)
+
+    rest = spec.add_key()
+    rest.name = "rest"
+    rest.qpos = _pose_qpos(model, {name: joint4_pos for name in joint4_names})
 
 def widen_joint4_lower_limit(spec: mujoco.MjSpec, joint4_name: str) -> None:
     """Widen `joint4_name`'s lower range bound by JOINT4_LOWER_LIMIT_MARGIN_RAD.

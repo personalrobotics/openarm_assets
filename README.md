@@ -136,7 +136,8 @@ An arm's EE site exists only if that arm was decorated, so the `left` and `right
 
 | Keyframe | Description |
 |----------|-------------|
-| `ready` | All joints at 0 except `joint4` on each arm at 0.3 rad, which keeps the arms off the singular zero pose |
+| `ready` | The pose the arms work from (`assembly.READY_POSE`): elbow bent, wrist turned in, right arm `0 0.7 -0.5 1.8 -1 -0.1 -0.55`, the left its mirror. A simulation starts in the first keyframe, and a controller that tracks a hand target starts from here; `--ready NAME=VALUE` gives a robot's own |
+| `rest` | All joints at 0 except `joint4` on each arm at 0.3 rad, which keeps the arms off the singular zero pose: the arm's near-stow pose, nearly singular, not one to work from |
 
 ## Available Models
 
@@ -192,7 +193,7 @@ scene = mujoco.MjModel.from_xml_path(str(get_model_path().parent / "scene.xml"))
 - a collision exclusion between each gripper's two fingers
 - a wider `joint4` lower limit
 - position-servo finger actuators on both arms (fixes the left arm's `<motor>` fingers)
-- a `ready` keyframe
+- `ready` and `rest` keyframes
 
 ### Command Line
 

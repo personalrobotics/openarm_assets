@@ -81,7 +81,9 @@ def world():
         "geoms": geoms,
         "motors": [mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, f"left_joint{i}_torque") for i in range(1, 8)],
     }
-    world["ready"] = model.key_qpos[0].copy()
+    # The arm starts from `rest`, the near-stow pose: the targets below, MARGIN and the clearance the cover has there were all found from it.
+    # This tests the guard, not the pose the arms work from (`ready`).
+    world["ready"] = model.key_qpos[mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_KEY, "rest")].copy()
 
     # Only pairs whose clearance varies with the arm's pose say anything about it: a link and the fingers beyond it are a
     # constant 6 mm apart however the arm moves, and two bodies too far apart to matter are a constant `distmax`.

@@ -181,15 +181,48 @@ def test_a_robot_can_give_its_own_ready_pose():
     other = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, "openarm_right_joint3")
     assert model.key_qpos[key][model.jnt_qposadr[other]] == 0.0
 
-    # Without it the keyframe is the arm's own: only joint 4 is off zero.
+    # Without it the keyframe is READY_POSE, and the near-stow pose is still there as `rest`.
+    from openarm_assets.assembly import READY_POSE
+
     default = build_openarm().compile()
-    joint4 = mujoco.mj_name2id(default, mujoco.mjtObj.mjOBJ_JOINT, "openarm_right_joint4")
-    assert default.key_qpos[0][default.jnt_qposadr[joint4]] == pytest.approx(0.3)
+    ready, rest = (mujoco.mj_name2id(default, mujoco.mjtObj.mjOBJ_KEY, name) for name in ("ready", "rest"))
+    assert default.key_qpos[ready][default.jnt_qposadr[mujoco.mj_name2id(default, mujoco.mjtObj.mjOBJ_JOINT, "openarm_right_joint4")]] == pytest.approx(1.8)
+    for name, value in READY_POSE.items():
+        assert default.key_qpos[ready][default.jnt_qposadr[mujoco.mj_name2id(default, mujoco.mjtObj.mjOBJ_JOINT, name)]] == pytest.approx(value)
+    for arm in ("left", "right"):
+        for n in range(1, 8):
+            address = default.jnt_qposadr[mujoco.mj_name2id(default, mujoco.mjtObj.mjOBJ_JOINT, f"openarm_{arm}_joint{n}")]
+            assert default.key_qpos[rest][address] == pytest.approx(0.3 if n == 4 else 0.0)
 
     with pytest.raises(ValueError, match="outside the joint's range"):
         build_openarm(ready={"openarm_right_joint6": 2.0})
     with pytest.raises(ValueError, match="no joint named"):
         build_openarm(ready={"openarm_right_joint9": 0.1})
+
+
+def test_the_ready_pose_is_the_right_arms_mirror_in_the_left():
+    """Joints 2 and 3 flip sign between the arms (their axes and ranges are mirrored); the rest are equal."""
+    from openarm_assets.assembly import READY_POSE
+
+    for n in range(1, 8):
+        left, right = READY_POSE.get(f"openarm_left_joint{n}", 0.0), READY_POSE.get(f"openarm_right_joint{n}", 0.0)
+        assert left == pytest.approx(-right if n in (2, 3) else right), n
+
+
+def test_the_ready_pose_is_what_a_hand_tracking_controller_can_start_from():
+    """Not the straight arm: every arm joint of `ready` is inside its range with room to move, and joint 4 is clear of its lower limit."""
+    from openarm_assets.assembly import build_openarm
+
+    model = build_openarm().compile()
+    ready = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_KEY, "ready")
+    for arm in ("left", "right"):
+        for n in range(1, 8):
+            joint = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, f"openarm_{arm}_joint{n}")
+            low, high = model.jnt_range[joint]
+            q = model.key_qpos[ready][model.jnt_qposadr[joint]]
+            assert low + 0.05 < q < high - 0.05 or q == 0.0, f"{arm} joint {n}: {q} is at its limit [{low}, {high}]"
+    joint4 = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, "openarm_right_joint4")
+    assert model.key_qpos[ready][model.jnt_qposadr[joint4]] > 1.0
 
 
 # -- the collision cover, as gafro reads it -------------------------------------------------------------------------------------
