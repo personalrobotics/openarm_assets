@@ -162,10 +162,12 @@ def add_collision_cover(spec: mujoco.MjSpec, **options) -> covers.Cover:
 #   position  group 3   <position>  force = kp (command - q) - kd dq             (MIT: position target)
 #
 # The gains are the ones the openarm-driver holds and tracks a position with (its `kp` and `kd`), so a position command means the
-# same thing on the arm as in the sim. They are starting values for bring-up, not tuned on an arm. Per joint 1..7; the left and
-# right arms are alike.
-ARM_KP = (120.0, 120.0, 60.0, 60.0, 20.0, 20.0, 20.0)
-ARM_KD = (2.0, 2.0, 1.5, 1.5, 0.5, 0.5, 0.5)
+# same thing on the arm as in the sim. They were tuned on the right arm (2026-10-26, a slow choreography show at its written speed):
+# the first starting values (kp 120 120 60 60 20 20 20, kd 2 2 1.5 1.5 0.5 0.5 0.5) rang at 2 Hz and moved in jerks, kp twice as high
+# halved the tracking error (mean 0.0049 -> 0.0026 rad), and kd at the top of what a MIT frame carries (kd up to 5, kp up to 500) took the
+# ringing out. Per joint 1..7; the left and right arms are alike, and the left has not run with these.
+ARM_KP = (240.0, 240.0, 120.0, 120.0, 40.0, 40.0, 40.0)
+ARM_KD = (5.0, 5.0, 3.5, 3.5, 1.2, 1.2, 1.2)
 
 # The arm's rated joint velocity and torque are enactic's, in the vendored URDF (<limit effort velocity>): rad/s and N m. They are lower
 # than what a motor frame can encode (the Damiao ranges), and they are the limits of the arm, so they are the velocity command range.
