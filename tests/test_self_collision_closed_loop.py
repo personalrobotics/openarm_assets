@@ -13,7 +13,7 @@ import pytest
 
 gafro = pytest.importorskip("gafro")
 
-from gafro.control import spec  # noqa: E402
+from gafro.control import description  # noqa: E402
 from openarm_assets import MODELS_DIR  # noqa: E402
 from openarm_assets import collision_cover as covers  # noqa: E402
 
@@ -118,16 +118,9 @@ def _run(world, guard, target, seconds=3.0, control_dt=0.002):
     goal = world["ready"][qadr].copy()
     goal[:7] = target
     pose = system.compute_kinematic_chain_motor("openarm_left_hand_tcp", goal)
-    context = dict(
-        system=system,
-        task_space=task,
-        task_space_name=task.get_name(),
-        domain=domain,
-        configuration=world["ready"][qadr],
-        reference=pose,
-        reference_source=gafro.control.MotorReferenceSource(pose, horizon=10.0),
-    )
-    controller, _ = spec.build(_description(guard), INPUTS, context)
+    inputs = description.BuildInputs(
+        poses={"reference": description.PoseInput(pose, gafro.control.MotorReferenceSource(pose, horizon=10.0))})
+    controller = description.build(description.parse(_description(guard)), system, task, world["ready"][qadr], inputs).controller
 
     data = mujoco.MjData(model)
     data.qpos[:] = world["ready"]
