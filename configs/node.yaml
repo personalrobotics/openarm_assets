@@ -1,0 +1,77 @@
+# SPDX-FileCopyrightText: 2026 Tobias Loew <tobias.loew@gafro.ch>
+# SPDX-License-Identifier: MPL-2.0
+#
+# The OpenArm right arm as a gafro-robot-node, in simulation. The controller is opendubs' follow_path (software/openarm/gafro/controllers.yaml):
+# a joint-position controller (`type: position` is how it drives the arm, not what it tracks: the stage is a joint-space posture), so the integrated anchor is the command and the motor's own PD and the driver's gravity feed-forward close the loop.
+# A path goes in on `right/path/trajectory`, the behaviour `track_trajectory` plays it, and `lifecycle` / `health` say how it went.
+#
+#   gafro-robot-node --config configs/node.yaml --transport local --run-for 10
+#
+# The hardware variant is this file with `robot: {backend: hardware, hardware_config: <the arm's hardware.yaml>}` and the driver's permit.
+robot:
+  model: src/openarm_assets/models/openarm/generated/openarm_bimanual_decorated.xml
+  backend: sim
+  task_space: right
+
+task_spaces:
+  right: {pose: right/pose}
+
+inputs:
+  goal: {task_space: right, channel: right/goal}
+  posture: {task_space: right, channel: right/path}
+  posture_rate: {task_space: right, channel: right/path_rate}
+
+controllers:
+  follow_path:                  # a joint-position controller: tracks a joint trajectory (posture), drives the arm by position
+    inputs: {posture: joints, posture_rate: joint_rates}
+    type: position
+    maximum_lead: 0.02          # rad per joint: the offset that closes what the actuator did not do (friction dead band)
+    maximum_error: 0.15         # rad per joint: the leash of the anchor on the measured position
+    offset_gain: 2.0            # 1/s: low, a high gain hunts against friction
+    regularization: 0.05
+    limits: {joint_velocity: model}
+    stages:
+      - name: posture
+        task_space: right
+        input: joints
+        objective: {posture: {target: posture}}
+        law: {pd: {gain: 20.0, max_speed: 0.5, feedforward: posture_rate}}
+        output: velocity
+
+  go_to_position:               # joint-position controller, like follow_path
+    inputs: {goal: joints}
+    type: position
+    maximum_lead: 0.02
+    maximum_error: 0.15
+    offset_gain: 2.0
+    regularization: 0.05
+    limits: {joint_velocity: model}
+    stages:
+      - name: posture
+        task_space: right
+        input: joints
+        objective: {posture: {target: goal}}
+        law: {pd: {gain: 20.0, max_speed: 0.5}}
+        output: velocity
+
+behaviours:
+  go_to_start:                          # OpenArm only: a path must start where the arm is, so the client sends a goal and goes there first
+    timeout:
+      seconds: 8
+      child:
+        fallback:
+          - near_trajectory: {input: goal, tolerance: 0.02, at: end}
+          - action: go_to_position
+
+  track_trajectory:
+    template: track_trajectory          # gafro-robot-node ships it
+    with: {controller: follow_path, input: posture}
+
+start: follow_path
+knots: {goal: 2, posture: 400, posture_rate: 400}   # the most knots one trajectory on an input may carry
+
+loop: {period: 0.004, health_period: 0.5}
+
+transport:
+  name: local
+  channels: {lifecycle: lifecycle, health: health, behaviour: behaviour}
