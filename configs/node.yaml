@@ -7,7 +7,7 @@
 #
 #   gafro-robot-node --config configs/node.yaml --transport local --run-for 10
 #
-# The arm's variant is configs/node_hardware.yaml: this file with the hardware backend, the permit guard and ROS 2 as the transport.
+# The hardware variant is this file with `robot: {backend: hardware, hardware_config: <the arm's hardware.yaml>}` and the driver's permit.
 robot:
   model: src/openarm_assets/models/openarm/generated/openarm_bimanual_decorated.xml
   backend: sim
