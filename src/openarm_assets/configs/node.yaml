@@ -66,49 +66,9 @@ behaviours:
     template: track_trajectory
     with: {controller: follow_paths, input: posture_left}
 
-  # track_trajectory over both inputs: both must be at their first knot to start, keep up while either runs, and arrive at their
-  # last knot within the settle time; the first check that trips posts track_both.<reason> and fails.
-  track_both:
-    sequence:
-      - fallback:
-          - sequence:
-              - invert: {trajectory: {input: posture_right, is: ended}}
-              - invert: {trajectory: {input: posture_left, is: ended}}
-              - near_trajectory: {input: posture_right, tolerance: 0.0524, at: start}
-              - near_trajectory: {input: posture_left, tolerance: 0.0524, at: start}
-          - invert: {post: track_both.start}
-      - sequence:
-          memory: restart
-          children:
-            - fallback:
-                - sequence:
-                    - fallback: [{invert: {trajectory: {input: posture_right, is: active}}}, {near_trajectory: {input: posture_right, tolerance: 0.2, at: current}}]
-                    - fallback: [{invert: {trajectory: {input: posture_left, is: active}}}, {near_trajectory: {input: posture_left, tolerance: 0.2, at: current}}]
-                - invert: {post: track_both.tracking}
-            - fallback:
-                - sequence: [{trajectory: {input: posture_right, is: ended}}, {trajectory: {input: posture_left, is: ended}}]
-                - action: follow_paths
-      - timeout:
-          seconds: 1.0
-          child:
-            sequence:
-              memory: restart
-              children:
-                - fallback:
-                    - sequence:
-                        - fallback: [{invert: {trajectory: {input: posture_right, is: active}}}, {near_trajectory: {input: posture_right, tolerance: 0.2, at: current}}]
-                        - fallback: [{invert: {trajectory: {input: posture_left, is: active}}}, {near_trajectory: {input: posture_left, tolerance: 0.2, at: current}}]
-                    - invert: {post: track_both.tracking}
-                - fallback:
-                    - sequence:
-                        - near_trajectory: {input: posture_right, tolerance: 0.05, at: end}
-                        - near_trajectory: {input: posture_left, tolerance: 0.05, at: end}
-                    - action: follow_paths
-      - fallback:
-          - sequence:
-              - near_trajectory: {input: posture_right, tolerance: 0.05, at: end}
-              - near_trajectory: {input: posture_left, tolerance: 0.05, at: end}
-          - invert: {post: track_both.goal}
+  track_both:                   # both arms' paths together, under the same checks
+    template: track_trajectory
+    with: {controller: follow_paths, input: [posture_right, posture_left]}
 
 start: follow_paths
 knots: {posture_right: 400, posture_left: 400}   # the most knots one path may carry; each rate input takes its path's
