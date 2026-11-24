@@ -57,8 +57,6 @@ controllers:
         law: {pd: {gain: 20.0, feedforward: posture_rate_left}}
         output: velocity
 
-events: [track_both.start, track_both.tracking, track_both.goal]
-
 behaviours:
   track_right:
     template: track_trajectory          # gafro-robot-node ships it
