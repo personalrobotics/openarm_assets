@@ -51,6 +51,11 @@ _OUT_PATHS: dict[str, Path] = {
 # lower bound.
 HEAD_CAP = math.radians(180.0 - 25.0)
 
+# The fastest openarm-driver runs a joint, rad/s: its vibration stop is 1 rad/s above a joint's velocity limit and must stay under the
+# overspeed trip (4.9 rad/s on joints 3 and 4, 6 on the others), and the driver refuses a model whose limit reaches the trip. The URDF's
+# ratings (up to 20.9 rad/s) are the motors', not what the driver lets the arm do, so a model the driver runs carries this instead.
+DRIVER_VELOCITY_LIMIT = 3.5
+
 _SIDES = {
     "left": {
         "ee_site_name": "openarm_left_ee_site",
@@ -194,16 +199,20 @@ def urdf_limits(path: Path = _URDF) -> dict[str, tuple[float, float]]:
 TORQUE_GROUP, VELOCITY_GROUP, POSITION_GROUP = 1, 2, 3
 
 
-def add_arm_actuators(spec: mujoco.MjSpec, side_name: Side) -> None:
+def add_arm_actuators(spec: mujoco.MjSpec, side_name: Side, velocity_limit: float | None = None) -> None:
     """Give each arm joint a torque, a velocity and a position actuator.
 
     The joint's existing actuator (gain 1, no bias, limited by its motor class's torque) becomes the torque one; the other two are
     added with the same torque limit. Call after the joint limits are final: the position actuator's command range is the joint's.
+    The velocity actuator's command range is the joint's velocity limit, which gafro and the driver read: the URDF's rating, or
+    `velocity_limit` where that is lower.
     """
     for joint_index in range(1, 8):
         joint = f"openarm_{side_name}_joint{joint_index}"
         kp, kd = ARM_KP[joint_index - 1], ARM_KD[joint_index - 1]
         rated_torque, speed = urdf_limits()[joint]
+        if velocity_limit is not None:
+            speed = min(speed, velocity_limit)
 
         torque = spec.actuator(f"{side_name}_joint{joint_index}_ctrl")
         limit = torque.forcerange[1]
@@ -402,6 +411,7 @@ def build_openarm(
         ready: dict[str, float] | None = None,
         collision_cover: bool = True,
         collision_options: dict | None = None,
+        velocity_limit: float | None = None,
 ) -> mujoco.MjSpec:
     """Load the OpenArm scene and apply all decorations.
 
@@ -411,7 +421,8 @@ def build_openarm(
     controller has to cancel. Pass `gravcomp` for a weightless sim, as the impedance controller's
     onboard compensation made the real arm.
 
-    `joint_ranges` narrows named joints' ranges for a robot (see `narrow_joint_ranges`); `ready` is the robot's own ready pose
+    `joint_ranges` narrows named joints' ranges for a robot (see `narrow_joint_ranges`); `velocity_limit` caps every arm joint's velocity limit
+    (rad/s; see `add_arm_actuators`, and DRIVER_VELOCITY_LIMIT for a model openarm-driver runs); `ready` is the robot's own ready pose
     (joint name -> angle, the others at 0), in place of the arm's nearly straight one (see `add_ready_keyframe`).
 
     `collision_cover` writes the ball cover and its pairs for gafro's self-collision objective (see `add_collision_cover`);
@@ -441,7 +452,7 @@ def build_openarm(
     narrow_joint_ranges(spec, joint_ranges or {})
 
     for side_name in _SIDES:
-        add_arm_actuators(spec, side_name)
+        add_arm_actuators(spec, side_name, velocity_limit=velocity_limit)
     add_ready_keyframe(spec, [s["joint4"] for s in _SIDES.values()], pose=ready)
     add_gafro_annotations(spec, sides)
     if collision_cover:
@@ -486,7 +497,12 @@ def main() -> None:
    )
    parser.add_argument(
        "--head-cap", action="store_true",
-       help="Both arms, with joint 2 capped by a head beside them (HEAD_CAP); written to generated/openarm_bimanual_head_cap.xml.",
+       help="Both arms as a robot with a head beside them runs them on openarm-driver: joint 2 capped (HEAD_CAP) and every joint at most "
+       "DRIVER_VELOCITY_LIMIT; written to generated/openarm_bimanual_head_cap.xml.",
+   )
+   parser.add_argument(
+       "--velocity-limit", type=float, default=None,
+       help="Cap every arm joint's velocity limit, rad/s (the --head-cap model uses DRIVER_VELOCITY_LIMIT).",
    )
    parser.add_argument(
        "--ready", action="append", default=[], metavar="NAME=VALUE",
@@ -518,8 +534,10 @@ def main() -> None:
        if args.sides != "bimanual":
            parser.error("--head-cap is a bimanual model")
        ranges = {**head_cap_ranges(args.src), **ranges}
+       if args.velocity_limit is None:
+           args.velocity_limit = DRIVER_VELOCITY_LIMIT
    spec = build_openarm(args.src, sides=sides, gravcomp=args.gravcomp, joint_ranges=ranges, ready=ready, collision_cover=not args.no_collision_cover,
-                         collision_options={"span": args.collision_span})
+                         collision_options={"span": args.collision_span}, velocity_limit=args.velocity_limit)
  
    # Sanity check: does it actually compile?
    model = spec.compile()
