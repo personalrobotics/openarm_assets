@@ -27,7 +27,6 @@ behaviours:
       - reach: &reach_right
           target: reach_right
           to: posture_right
-          task_space: right
           knots: 40
           horizon: 4.0
           failed: reach_failed
@@ -41,7 +40,6 @@ behaviours:
       - reach: &reach_left
           target: reach_left
           to: posture_left
-          task_space: left
           knots: 40
           horizon: 4.0
           failed: reach_failed
