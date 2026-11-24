@@ -15,7 +15,7 @@ extends: node.yaml
 
 task_nodes: [{name: self_motion_charts_reach}]
 
-events: [track_both.start, track_both.tracking, track_both.goal, reach_failed]   # a list replaces the base's: node.yaml's events, and this file's
+events: [reach_failed]          # what reach posts when no path reaches the pose; the trees' own posts need no listing
 
 inputs:                         # the poses `reach` plans to; no controller tracks them, so each says what it carries
   reach_right: {task_space: right, channel: right/reach, type: pose}
