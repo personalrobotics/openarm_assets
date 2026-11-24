@@ -1,0 +1,770 @@
+<mujoco model="openarm">
+  <compiler angle="radian" meshdir="../meshes"/>
+
+  <size nkey="2"/>
+
+  <default>
+    <default class="robot">
+      <default class="motor_DM8009">
+        <joint damping="0.4" frictionloss="0.1" limited="true"/>
+        <general forcelimited="true" forcerange="-40 40"/>
+      </default>
+      <default class="motor_DM4340">
+        <joint damping="0.4" frictionloss="0.1" limited="true"/>
+        <general forcelimited="true" forcerange="-27 27"/>
+      </default>
+      <default class="motor_DM4310">
+        <joint damping="0.4" frictionloss="0.1" limited="true"/>
+        <general forcelimited="true" forcerange="-7 7"/>
+      </default>
+      <default class="motor_finger">
+        <joint type="slide" stiffness="0.5" damping="2" limited="true"/>
+        <general ctrlrange="0 0.044" ctrllimited="true" forcelimited="true" forcerange="-333 333" input="pos" biastype="affine" gainprm="100" biasprm="0 -100"/>
+      </default>
+      <default class="collision">
+        <geom group="3" priority="1" friction="1 0.01 0.01" solref="0.005" material="collision_material"/>
+
+        <equality solref="0.005" solimp="0.99 0.999 1e-05"/>
+      </default>
+      <default class="visual">
+        <geom contype="0" conaffinity="0" group="2" material="visualgeom"/>
+      </default>
+    </default>
+  </default>
+
+  <asset>
+    <material name="default_material" rgba="0.7 0.7 0.7 1"/>
+    <material name="collision_material" rgba="1 0.28 0.1 0.9"/>
+    <material name="matte_black" reflectance="0.0509804" rgba="0.247059 0.247059 0.247059 1"/>
+    <material name="metal_silver" shininess="1" reflectance="1" rgba="0.796078 0.796078 0.796078 1"/>
+    <mesh name="body_collision" content_type="model/stl" file="collision/body/body_link0.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link0_collision" content_type="model/stl" file="collision/arm/link0.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link0_collision_left" content_type="model/stl" file="collision/arm/link0.stl" scale="0.001 -0.001 0.001"/>
+    <mesh name="link1_collision" content_type="model/stl" file="collision/arm/link1.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link1_collision_left" content_type="model/stl" file="collision/arm/link1.stl" scale="0.001 -0.001 0.001"/>
+    <mesh name="link2_collision" content_type="model/stl" file="collision/arm/link2.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link2_collision_left" content_type="model/stl" file="collision/arm/link2.stl" scale="0.001 -0.001 0.001"/>
+    <mesh name="link3_collision" content_type="model/stl" file="collision/arm/link3.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link3_collision_left" content_type="model/stl" file="collision/arm/link3.stl" scale="0.001 -0.001 0.001"/>
+    <mesh name="link4_collision" content_type="model/stl" file="collision/arm/link4.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link5_collision" content_type="model/stl" file="collision/arm/link5.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link5_collision_left" content_type="model/stl" file="collision/arm/link5.stl" scale="0.001 -0.001 0.001"/>
+    <mesh name="link6_collision" content_type="model/stl" file="collision/arm/link6.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link6_collision_left" content_type="model/stl" file="collision/arm/link6.stl" scale="0.001 -0.001 0.001"/>
+    <mesh name="link7_collision" content_type="model/stl" file="collision/arm/link7.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link7_collision_left" content_type="model/stl" file="collision/arm/link7.stl" scale="0.001 -0.001 0.001"/>
+    <mesh name="hand_collision" content_type="model/stl" file="collision/gripper/hand.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="finger_collision" content_type="model/stl" file="collision/gripper/finger.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="finger_collision_left" content_type="model/stl" file="collision/gripper/finger.stl" scale="0.001 -0.001 0.001"/>
+    <mesh name="body_link0_0.obj" content_type="model/obj" file="visual/body/body_link0_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="body_link0_1.obj" content_type="model/obj" file="visual/body/body_link0_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="body_link0_2.obj" content_type="model/obj" file="visual/body/body_link0_2.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="body_link0_3.obj" content_type="model/obj" file="visual/body/body_link0_3.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="body_link0_4.obj" content_type="model/obj" file="visual/body/body_link0_4.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="body_link0_5.obj" content_type="model/obj" file="visual/body/body_link0_5.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link0_0.obj" content_type="model/obj" file="visual/arm/link0_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link0_1.obj" content_type="model/obj" file="visual/arm/link0_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link1_0.obj" content_type="model/obj" file="visual/arm/link1_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link1_1.obj" content_type="model/obj" file="visual/arm/link1_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link1_2.obj" content_type="model/obj" file="visual/arm/link1_2.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link1_3.obj" content_type="model/obj" file="visual/arm/link1_3.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link2_0.obj" content_type="model/obj" file="visual/arm/link2_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link2_1.obj" content_type="model/obj" file="visual/arm/link2_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link2_2.obj" content_type="model/obj" file="visual/arm/link2_2.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link3_0.obj" content_type="model/obj" file="visual/arm/link3_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link3_1.obj" content_type="model/obj" file="visual/arm/link3_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link3_2.obj" content_type="model/obj" file="visual/arm/link3_2.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link4_0.obj" content_type="model/obj" file="visual/arm/link4_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link4_1.obj" content_type="model/obj" file="visual/arm/link4_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link4_2.obj" content_type="model/obj" file="visual/arm/link4_2.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link5_0.obj" content_type="model/obj" file="visual/arm/link5_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link5_1.obj" content_type="model/obj" file="visual/arm/link5_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link5_2.obj" content_type="model/obj" file="visual/arm/link5_2.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link6_0.obj" content_type="model/obj" file="visual/arm/link6_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link6_1.obj" content_type="model/obj" file="visual/arm/link6_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link6_0_left.obj" content_type="model/obj" file="visual/arm/link6_0.obj" scale="0.001 -0.001 0.001"/>
+    <mesh name="link6_1_left.obj" content_type="model/obj" file="visual/arm/link6_1.obj" scale="0.001 -0.001 0.001"/>
+    <mesh name="link7_0.obj" content_type="model/obj" file="visual/arm/link7_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link7_1.obj" content_type="model/obj" file="visual/arm/link7_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link7_0_left.obj" content_type="model/obj" file="visual/arm/link7_0.obj" scale="0.001 -0.001 0.001"/>
+    <mesh name="link7_1_left.obj" content_type="model/obj" file="visual/arm/link7_1.obj" scale="0.001 -0.001 0.001"/>
+    <mesh name="hand_0.obj" content_type="model/obj" file="visual/gripper/hand_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="hand_1.obj" content_type="model/obj" file="visual/gripper/hand_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="finger_0.obj" content_type="model/obj" file="visual/gripper/finger_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="finger_0_flip.obj" content_type="model/obj" file="visual/gripper/finger_0.obj" scale="0.001 -0.001 0.001"/>
+    <mesh name="finger_1.obj" content_type="model/obj" file="visual/gripper/finger_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="finger_1_flip.obj" content_type="model/obj" file="visual/gripper/finger_1.obj" scale="0.001 -0.001 0.001"/>
+  </asset>
+
+  <worldbody>
+    <site name="world_site"/>
+    <camera name="front_camera" quat="0 0 0.707107 0.707107" pos="0 2 0.5" mode="track" fovy="90"/>
+    <camera name="side_camera" quat="-0.5 -0.5 0.5 0.5" pos="-2 0 0.5" mode="track" fovy="90"/>
+    <body name="openarm_body_link0">
+      <inertial pos="0 0 0" mass="13.89" diaginertia="1.653 1.653 0.051"/>
+      <geom name="openarm_body_link0_collision" class="collision" type="mesh" mesh="body_link0_3.obj"/>
+      <geom name="openarm_body_link0_visual_0" class="visual" quat="1 0 0 0" type="mesh" material="matte_black" mesh="body_link0_0.obj"/>
+      <geom name="openarm_body_link0_visual_1" class="visual" pos="0 0 0" quat="1 0 0 0" type="mesh" material="metal_silver" mesh="body_link0_1.obj"/>
+      <geom name="openarm_body_link0_visual_2" class="visual" quat="1 0 0 0" type="mesh" material="matte_black" mesh="body_link0_2.obj"/>
+      <geom name="openarm_body_link0_visual_3" class="visual" type="mesh" material="matte_black" mesh="body_link0_3.obj"/>
+      <geom name="openarm_body_link0_visual_4" class="visual" type="mesh" material="metal_silver" mesh="body_link0_4.obj"/>
+      <geom name="openarm_body_link0_visual_5" class="visual" pos="0 0 0" quat="1 0 0 0" type="mesh" material="matte_black" mesh="body_link0_5.obj"/>
+      <body name="openarm_left_link0" pos="0 0.031 0.698" quat="0.707105 -0.707108 0 0">
+        <inertial pos="-0.000948336 0.000158021 0.0307686" mass="1.14323" diaginertia="0.001128 0.000962 0.00147"/>
+        <geom name="openarm_left_link0_collision" class="collision" quat="1 0 0 0" type="mesh" mesh="link0_collision_left"/>
+        <geom name="openarm_left_link0_visual_0" class="visual" quat="1 0 0 0" type="mesh" material="metal_silver" mesh="link0_0.obj"/>
+        <geom name="openarm_left_link0_visual_1" class="visual" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link0_1.obj"/>
+        <body name="openarm_left_link1" pos="0 0 0.0625">
+          <inertial pos="0.00114677 3.31999e-05 0.0539528" mass="1.14167" diaginertia="0.001567 0.001273 0.001016"/>
+          <joint name="openarm_left_joint1" class="motor_DM8009" range="-3.49066 1.39626" actuatorfrcrange="-40 40" actuatorfrclimited="true"/>
+          <geom name="openarm_left_link1_collision" class="collision" pos="0 0 -0.0625" type="mesh" mesh="link1_collision_left"/>
+          <geom name="openarm_left_link1_visual_0" class="visual" pos="0 0 -0.0625" type="mesh" material="matte_black" mesh="link1_0.obj"/>
+          <geom name="openarm_left_link1_visual_2" class="visual" pos="0 0 -0.0625" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link1_2.obj"/>
+          <geom name="openarm_left_link1_visual_3" class="visual" pos="0 0 -0.0625" type="mesh" material="matte_black" mesh="link1_3.obj"/>
+          <body name="openarm_left_link2" pos="-0.0301 0 0.06" quat="0.707107 -0.707107 0 0">
+            <inertial pos="0.00839629 -2.01451e-08 0.0325665" mass="0.277509" diaginertia="0.000359 0.000376 0.000232"/>
+            <joint name="openarm_left_joint2" class="motor_DM8009" range="-2.70526 0.174533" actuatorfrcrange="-40 40" axis="-1 0 0" actuatorfrclimited="true"/>
+            <geom name="openarm_left_link2_collision" class="collision" pos="0.0301 0 -0.1225" quat="1 0 0 0" type="mesh" mesh="link2_collision_left"/>
+            <geom name="openarm_left_link2_visual_0" class="visual" pos="0.0301 0 -0.1225" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link2_0.obj"/>
+            <geom name="openarm_left_link2_visual_1" class="visual" pos="0.0301 0 -0.1225" type="mesh" material="matte_black" mesh="link2_1.obj"/>
+            <geom name="openarm_left_link2_visual_2" class="visual" pos="0.0301 0 -0.1225" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link2_2.obj"/>
+            <body name="openarm_left_link3" pos="0.0301 0 0.06625">
+              <inertial pos="-0.00210475 0.000554909 0.0884747" mass="1.07386" diaginertia="0.004372 0.004319 0.000661"/>
+              <joint name="openarm_left_joint3" class="motor_DM4340" range="-1.5708 1.5708" actuatorfrcrange="-27 27" actuatorfrclimited="true"/>
+              <geom name="openarm_left_link3_collision" class="collision" pos="0 0 -0.18875" quat="1 0 0 0" type="mesh" mesh="link3_collision_left"/>
+              <geom name="openarm_left_link3_visual_0" class="visual" pos="0 0 -0.18875" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link3_0.obj"/>
+              <geom name="openarm_left_link3_visual_1" class="visual" pos="0 0 -0.18875" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link3_1.obj"/>
+              <geom name="openarm_left_link3_visual_2" class="visual" pos="0 0 -0.18875" type="mesh" material="metal_silver" mesh="link3_2.obj"/>
+              <body name="openarm_left_link4" pos="0 0.0315 0.15375">
+                <inertial pos="-0.00290068 -0.0303058 0.0633964" mass="0.634853" diaginertia="0.001577 0.001346 0.001104"/>
+                <joint name="openarm_left_joint4" class="motor_DM4340" range="-0.05 2.44346" actuatorfrcrange="-27 27" axis="0 1 0" actuatorfrclimited="true"/>
+                <geom name="openarm_left_link4_collision" class="collision" pos="0 -0.0315 -0.3425" type="mesh" mesh="link4_collision"/>
+                <geom name="openarm_left_link4_visual_0" class="visual" pos="0 -0.0315 -0.3425" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link4_0.obj"/>
+                <geom name="openarm_left_link4_visual_1" class="visual" pos="0 -0.0315 -0.3425" quat="1 0 0 0" type="mesh" material="metal_silver" mesh="link4_1.obj"/>
+                <geom name="openarm_left_link4_visual_2" class="visual" pos="0 -0.0315 -0.3425" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link4_2.obj"/>
+                <body name="openarm_left_link5" pos="0 -0.0315 0.0955">
+                  <inertial pos="-0.00304967 0.00088669 0.0430798" mass="0.615659" diaginertia="0.000423 0.000445 0.000324"/>
+                  <joint name="openarm_left_joint5" class="motor_DM4310" range="-1.5708 1.5708" actuatorfrcrange="-7 7" actuatorfrclimited="true"/>
+                  <geom name="openarm_left_link5_collision" class="collision" pos="0 0 -0.438" quat="1 0 0 0" type="mesh" mesh="link5_collision_left"/>
+                  <geom name="openarm_left_link5_visual_0" class="visual" pos="0 0 -0.438" type="mesh" material="matte_black" mesh="link5_0.obj"/>
+                  <geom name="openarm_left_link5_visual_1" class="visual" pos="0 0 -0.438" quat="1 0 0 0" type="mesh" material="metal_silver" mesh="link5_1.obj"/>
+                  <geom name="openarm_left_link5_visual_2" class="visual" pos="0 0 -0.438" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link5_2.obj"/>
+                  <body name="openarm_left_link6" pos="0.0375 0 0.1205">
+                    <inertial pos="-0.0371366 0.000332305 -9.49837e-05" mass="0.475203" diaginertia="0.000143 0.000157 0.000159"/>
+                    <joint name="openarm_left_joint6" class="motor_DM4310" range="-0.785398 0.785398" actuatorfrcrange="-7 7" axis="1 0 0" actuatorfrclimited="true"/>
+                    <geom name="openarm_left_link6_collision" class="collision" pos="-0.0375 0 -0.5585" quat="1 0 0 0" type="mesh" mesh="link6_collision_left"/>
+                    <geom name="openarm_left_link6_visual_0" class="visual" pos="-0.0375 0 -0.5585" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link6_0_left.obj"/>
+                    <geom name="openarm_left_link6_visual_1" class="visual" pos="-0.0375 0 -0.5585" quat="1 0 0 0" type="mesh" material="metal_silver" mesh="link6_1_left.obj"/>
+                    <body name="openarm_left_link7" pos="-0.0375 0 0">
+                      <inertial pos="6.87551e-05 -0.0176618 0.0665195" mass="0.465977" diaginertia="0.000639 0.000497 0.000342"/>
+                      <joint name="openarm_left_joint7" class="motor_DM4310" range="-1.5708 1.5708" actuatorfrcrange="-7 7" axis="0 -1 0" actuatorfrclimited="true"/>
+                      <geom name="openarm_left_link7_collision" class="collision" pos="0 0 -0.5585" type="mesh" mesh="link7_collision_left"/>
+                      <geom name="openarm_left_link7_visual_0" class="visual" pos="0 0 -0.5585" quat="1 0 0 0" type="mesh" material="metal_silver" mesh="link7_0_left.obj"/>
+                      <geom name="openarm_left_link7_visual_1" class="visual" pos="0 0 -0.5585" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link7_1_left.obj"/>
+                      <body name="openarm_left_link8" pos="1e-06 0.0205 0">
+                        <body name="openarm_left_hand" pos="0 -0.025 0.1001">
+                          <inertial pos="0 0.002 0.01" mass="0.15" diaginertia="0.0001 0.00025 0.00017"/>
+                          <geom name="openarm_left_hand_collision" class="collision" pos="0 0.005 -0.6585" quat="1 0 0 0" type="mesh" mesh="hand_collision"/>
+                          <geom name="openarm_left_hand_visual_0" class="visual" pos="0 0.005 -0.6585" quat="1 0 0 0" type="mesh" material="metal_silver" mesh="hand_0.obj"/>
+                          <geom name="openarm_left_hand_visual_1" class="visual" pos="0 0.005 -0.6585" quat="1 0 0 0" type="mesh" material="metal_silver" mesh="hand_1.obj"/>
+                          <body name="openarm_left_hand_tcp" pos="0 0 0.08">
+                            <site name="openarm_left_ee_site"/>
+                          </body>
+                          <body name="openarm_left_right_finger" pos="0 0 0.015">
+                            <inertial pos="0.0064528 -0.01702 0.0219685" mass="0.0360255" diaginertia="2.375e-06 2.375e-06 7.5e-07"/>
+                            <joint name="openarm_left_finger_joint1" class="motor_finger" range="0 0.044" axis="0 -1 0"/>
+                            <geom name="openarm_left_right_finger_collision" class="collision" pos="0 0.05 -0.673001" quat="1 0 0 0" type="mesh" mesh="finger_collision_left"/>
+                            <geom name="openarm_left_right_finger_visual_0" class="visual" pos="0 0.05 -0.673001" quat="1 0 0 0" type="mesh" material="default_material" mesh="finger_0_flip.obj"/>
+                            <geom name="openarm_left_right_finger_visual_1" class="visual" pos="0 0.05 -0.673001" quat="1 0 0 0" type="mesh" material="matte_black" mesh="finger_1_flip.obj"/>
+                          </body>
+                          <body name="openarm_left_left_finger" pos="0 0.012 0.015">
+                            <inertial pos="0.0064528 0.01702 0.0219685" mass="0.0360255" diaginertia="2.375e-06 2.375e-06 7.5e-07"/>
+                            <joint name="openarm_left_finger_joint2" class="motor_finger" range="0 0.044" axis="0 1 0"/>
+                            <geom name="openarm_left_left_finger_collision" class="collision" pos="0 -0.05 -0.673001" quat="1 0 0 0" type="mesh" mesh="finger_collision"/>
+                            <geom name="openarm_left_left_finger_visual_0" class="visual" pos="0 -0.05 -0.673001" quat="1 0 0 0" type="mesh" material="default_material" mesh="finger_0.obj"/>
+                            <geom name="openarm_left_left_finger_visual_1" class="visual" pos="0 -0.05 -0.673001" quat="1 0 0 0" type="mesh" material="matte_black" mesh="finger_1.obj"/>
+                          </body>
+                        </body>
+                      </body>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="openarm_right_link0" pos="0 -0.031 0.698" quat="0.707105 0.707108 0 0">
+        <inertial pos="-0.000948336 0.000158021 0.0307686" mass="1.14323" diaginertia="0.001128 0.000962 0.00147"/>
+        <geom name="openarm_right_link0_collision" class="collision" quat="1 0 0 0" type="mesh" mesh="link0_collision"/>
+        <geom name="openarm_right_link0_visual_0" class="visual" quat="1 0 0 0" type="mesh" material="metal_silver" mesh="link0_0.obj"/>
+        <geom name="openarm_right_link0_visual_1" class="visual" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link0_1.obj"/>
+        <body name="openarm_right_link1" pos="0 0 0.0625">
+          <inertial pos="0.00114677 3.31999e-05 0.0539528" mass="1.14167" diaginertia="0.001567 0.001273 0.001016"/>
+          <joint name="openarm_right_joint1" class="motor_DM8009" range="-1.39626 3.49066" actuatorfrcrange="-40 40" actuatorfrclimited="true"/>
+          <geom name="openarm_right_link1_collision" class="collision" pos="0 0 -0.0625" type="mesh" mesh="link1_collision"/>
+          <geom name="openarm_right_link1_visual_0" class="visual" pos="0 0 -0.0625" type="mesh" material="matte_black" mesh="link1_0.obj"/>
+          <geom name="openarm_right_link1_visual_2" class="visual" pos="0 0 -0.0625" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link1_2.obj"/>
+          <geom name="openarm_right_link1_visual_3" class="visual" pos="0 0 -0.0625" type="mesh" material="matte_black" mesh="link1_3.obj"/>
+          <body name="openarm_right_link2" pos="-0.0301 0 0.06" quat="0.707107 0.707107 0 0">
+            <inertial pos="0.00839629 -2.01451e-08 0.0325665" mass="0.277509" diaginertia="0.000359 0.000376 0.000232"/>
+            <joint name="openarm_right_joint2" class="motor_DM8009" range="-0.174533 2.70526" actuatorfrcrange="-40 40" axis="-1 0 0" actuatorfrclimited="true"/>
+            <geom name="openarm_right_link2_collision" class="collision" pos="0.0301 0 -0.1225" type="mesh" mesh="link2_collision"/>
+            <geom name="openarm_right_link2_visual_0" class="visual" pos="0.0301 0 -0.1225" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link2_0.obj"/>
+            <geom name="openarm_right_link2_visual_1" class="visual" pos="0.0301 0 -0.1225" type="mesh" material="matte_black" mesh="link2_1.obj"/>
+            <geom name="openarm_right_link2_visual_2" class="visual" pos="0.0301 0 -0.1225" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link2_2.obj"/>
+            <body name="openarm_right_link3" pos="0.0301 0 0.06625">
+              <inertial pos="-0.00210475 0.000554909 0.0884747" mass="1.07386" diaginertia="0.004372 0.004319 0.000661"/>
+              <joint name="openarm_right_joint3" class="motor_DM4340" range="-1.5708 1.5708" actuatorfrcrange="-27 27" actuatorfrclimited="true"/>
+              <geom name="openarm_right_link3_collision" class="collision" pos="0 0 -0.18875" quat="1 0 0 0" type="mesh" mesh="link3_collision"/>
+              <geom name="openarm_right_link3_visual_0" class="visual" pos="0 0 -0.18875" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link3_0.obj"/>
+              <geom name="openarm_right_link3_visual_1" class="visual" pos="0 0 -0.18875" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link3_1.obj"/>
+              <geom name="openarm_right_link3_visual_2" class="visual" pos="0 0 -0.18875" type="mesh" material="metal_silver" mesh="link3_2.obj"/>
+              <body name="openarm_right_link4" pos="0 0.0315 0.15375">
+                <inertial pos="-0.00290068 -0.0303058 0.0633964" mass="0.634853" diaginertia="0.001577 0.001346 0.001104"/>
+                <joint name="openarm_right_joint4" class="motor_DM4340" range="-0.05 2.44346" actuatorfrcrange="-27 27" axis="0 1 0" actuatorfrclimited="true"/>
+                <geom name="openarm_right_link4_collision" class="collision" pos="0 -0.0315 -0.3425" type="mesh" mesh="link4_collision"/>
+                <geom name="openarm_right_link4_visual_0" class="visual" pos="0 -0.0315 -0.3425" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link4_0.obj"/>
+                <geom name="openarm_right_link4_visual_1" class="visual" pos="0 -0.0315 -0.3425" quat="1 0 0 0" type="mesh" material="metal_silver" mesh="link4_1.obj"/>
+                <geom name="openarm_right_link4_visual_2" class="visual" pos="0 -0.0315 -0.3425" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link4_2.obj"/>
+                <body name="openarm_right_link5" pos="0 -0.0315 0.0955">
+                  <inertial pos="-0.00304967 0.00088669 0.0430798" mass="0.615659" diaginertia="0.000423 0.000445 0.000324"/>
+                  <joint name="openarm_right_joint5" class="motor_DM4310" range="-1.5708 1.5708" actuatorfrcrange="-7 7" actuatorfrclimited="true"/>
+                  <geom name="openarm_right_link5_collision" class="collision" pos="0 0 -0.438" quat="1 0 0 0" type="mesh" mesh="link5_collision"/>
+                  <geom name="openarm_right_link5_visual_0" class="visual" pos="0 0 -0.438" type="mesh" material="matte_black" mesh="link5_0.obj"/>
+                  <geom name="openarm_right_link5_visual_1" class="visual" pos="0 0 -0.438" quat="1 0 0 0" type="mesh" material="metal_silver" mesh="link5_1.obj"/>
+                  <geom name="openarm_right_link5_visual_2" class="visual" pos="0 0 -0.438" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link5_2.obj"/>
+                  <body name="openarm_right_link6" pos="0.0375 0 0.1205">
+                    <inertial pos="-0.0371366 0.000332305 -9.49837e-05" mass="0.475203" diaginertia="0.000143 0.000157 0.000159"/>
+                    <joint name="openarm_right_joint6" class="motor_DM4310" range="-0.785398 0.785398" actuatorfrcrange="-7 7" axis="1 0 0" actuatorfrclimited="true"/>
+                    <geom name="openarm_right_link6_collision" class="collision" pos="-0.0375 0 -0.5585" quat="1 0 0 0" type="mesh" mesh="link6_collision"/>
+                    <geom name="openarm_right_link6_visual_0" class="visual" pos="-0.0375 0 -0.5585" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link6_0.obj"/>
+                    <geom name="openarm_right_link6_visual_1" class="visual" pos="-0.0375 0 -0.5585" quat="1 0 0 0" type="mesh" material="metal_silver" mesh="link6_1.obj"/>
+                    <body name="openarm_right_link7" pos="-0.0375 0 0">
+                      <inertial pos="6.87551e-05 -0.0176618 0.0665195" mass="0.465977" diaginertia="0.000639 0.000497 0.000342"/>
+                      <joint name="openarm_right_joint7" class="motor_DM4310" range="-1.5708 1.5708" actuatorfrcrange="-7 7" axis="0 1 0" actuatorfrclimited="true"/>
+                      <geom name="openarm_right_link7_collision" class="collision" pos="0 0 -0.5585" type="mesh" mesh="link7_collision"/>
+                      <geom name="openarm_right_link7_visual_0" class="visual" pos="0 0 -0.5585" quat="1 0 0 0" type="mesh" material="metal_silver" mesh="link7_0.obj"/>
+                      <geom name="openarm_right_link7_visual_1" class="visual" pos="0 0 -0.5585" quat="1 0 0 0" type="mesh" material="matte_black" mesh="link7_1.obj"/>
+                      <body name="openarm_right_link8" pos="1e-06 0.0205 0">
+                        <body name="openarm_right_hand" pos="0 -0.025 0.1001">
+                          <inertial pos="0 0.002 0.01" mass="0.15" diaginertia="0.0001 0.00025 0.00017"/>
+                          <geom name="openarm_right_hand_collision" class="collision" pos="0 0.005 -0.6585" quat="1 0 0 0" type="mesh" mesh="hand_collision"/>
+                          <geom name="openarm_right_hand_visual_0" class="visual" pos="0 0.005 -0.6585" quat="1 0 0 0" type="mesh" material="metal_silver" mesh="hand_0.obj"/>
+                          <geom name="openarm_right_hand_visual_1" class="visual" pos="0 0.005 -0.6585" quat="1 0 0 0" type="mesh" material="metal_silver" mesh="hand_1.obj"/>
+                          <body name="openarm_right_hand_tcp" pos="0 0 0.08">
+                            <site name="openarm_right_ee_site"/>
+                          </body>
+                          <body name="openarm_right_right_finger" pos="0 0 0.015">
+                            <inertial pos="0.0064528 -0.01702 0.0219685" mass="0.0360255" diaginertia="2.375e-06 2.375e-06 7.5e-07"/>
+                            <joint name="openarm_right_finger_joint1" class="motor_finger" range="0 0.044" axis="0 -1 0"/>
+                            <geom name="openarm_right_right_finger_collision" class="collision" pos="0 0.05 -0.673001" quat="1 0 0 0" type="mesh" mesh="finger_collision_left"/>
+                            <geom name="openarm_right_right_finger_visual_0" class="visual" pos="0 0.05 -0.673001" quat="1 0 0 0" type="mesh" material="default_material" mesh="finger_0_flip.obj"/>
+                            <geom name="openarm_right_right_finger_visual_1" class="visual" pos="0 0.05 -0.673001" quat="1 0 0 0" type="mesh" material="matte_black" mesh="finger_1_flip.obj"/>
+                          </body>
+                          <body name="openarm_right_left_finger" pos="0 0.012 0.015">
+                            <inertial pos="0.0064528 0.01702 0.0219685" mass="0.0360255" diaginertia="2.375e-06 2.375e-06 7.5e-07"/>
+                            <joint name="openarm_right_finger_joint2" class="motor_finger" range="0 0.044" axis="0 1 0"/>
+                            <geom name="openarm_right_left_finger_collision" class="collision" pos="0 -0.05 -0.673001" quat="1 0 0 0" type="mesh" mesh="finger_collision"/>
+                            <geom name="openarm_right_left_finger_visual_0" class="visual" pos="0 -0.05 -0.673001" quat="1 0 0 0" type="mesh" material="default_material" mesh="finger_0.obj"/>
+                            <geom name="openarm_right_left_finger_visual_1" class="visual" pos="0 -0.05 -0.673001" quat="1 0 0 0" type="mesh" material="matte_black" mesh="finger_1.obj"/>
+                          </body>
+                        </body>
+                      </body>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <contact>
+    <exclude body1="openarm_body_link0" body2="openarm_left_link0"/>
+    <exclude body1="openarm_left_link0" body2="openarm_left_link1"/>
+    <exclude body1="openarm_left_link0" body2="openarm_left_link2"/>
+    <exclude body1="openarm_left_link0" body2="openarm_left_link3"/>
+    <exclude body1="openarm_left_link1" body2="openarm_left_link2"/>
+    <exclude body1="openarm_left_link1" body2="openarm_left_link3"/>
+    <exclude body1="openarm_left_link2" body2="openarm_left_link3"/>
+    <exclude body1="openarm_left_link3" body2="openarm_left_link4"/>
+    <exclude body1="openarm_left_link4" body2="openarm_left_link5"/>
+    <exclude body1="openarm_left_link5" body2="openarm_left_link6"/>
+    <exclude body1="openarm_left_link5" body2="openarm_left_link7"/>
+    <exclude body1="openarm_left_link6" body2="openarm_left_link7"/>
+    <exclude body1="openarm_body_link0" body2="openarm_right_link0"/>
+    <exclude body1="openarm_right_link0" body2="openarm_right_link1"/>
+    <exclude body1="openarm_right_link0" body2="openarm_right_link2"/>
+    <exclude body1="openarm_right_link0" body2="openarm_right_link3"/>
+    <exclude body1="openarm_right_link1" body2="openarm_right_link2"/>
+    <exclude body1="openarm_right_link1" body2="openarm_right_link3"/>
+    <exclude body1="openarm_right_link2" body2="openarm_right_link3"/>
+    <exclude body1="openarm_right_link3" body2="openarm_right_link4"/>
+    <exclude body1="openarm_right_link4" body2="openarm_right_link5"/>
+    <exclude body1="openarm_right_link5" body2="openarm_right_link6"/>
+    <exclude body1="openarm_right_link5" body2="openarm_right_link7"/>
+    <exclude body1="openarm_right_link6" body2="openarm_right_link7"/>
+    <exclude body1="openarm_left_hand" body2="openarm_left_right_finger"/>
+    <exclude body1="openarm_left_hand" body2="openarm_left_left_finger"/>
+    <exclude body1="openarm_right_hand" body2="openarm_right_right_finger"/>
+    <exclude body1="openarm_right_hand" body2="openarm_right_left_finger"/>
+    <exclude body1="openarm_left_right_finger" body2="openarm_left_left_finger"/>
+    <exclude body1="openarm_right_right_finger" body2="openarm_right_left_finger"/>
+  </contact>
+
+  <tendon>
+    <fixed name="split_right" springlength="0">
+      <joint joint="openarm_right_finger_joint1" coef="0.5"/>
+      <joint joint="openarm_right_finger_joint2" coef="0.5"/>
+    </fixed>
+    <fixed name="split_left" springlength="0">
+      <joint joint="openarm_left_finger_joint1" coef="0.5"/>
+      <joint joint="openarm_left_finger_joint2" coef="0.5"/>
+    </fixed>
+  </tendon>
+
+  <equality>
+    <joint joint1="openarm_right_finger_joint1" joint2="openarm_right_finger_joint2" solref="0.005" solimp="0.95 0.99"/>
+    <joint joint1="openarm_left_finger_joint1" joint2="openarm_left_finger_joint2" solref="0.005" solimp="0.95 0.99"/>
+  </equality>
+
+  <actuator>
+    <motor name="left_joint1_torque" joint="openarm_left_joint1" gear="1" group="1" ctrllimited="true" ctrlrange="-40 40" forcelimited="true" forcerange="-40 40"/>
+    <motor name="left_joint2_torque" joint="openarm_left_joint2" gear="1" group="1" ctrllimited="true" ctrlrange="-40 40" forcelimited="true" forcerange="-40 40"/>
+    <motor name="left_joint3_torque" joint="openarm_left_joint3" gear="1" group="1" ctrllimited="true" ctrlrange="-27 27" forcelimited="true" forcerange="-27 27"/>
+    <motor name="left_joint4_torque" joint="openarm_left_joint4" gear="1" group="1" ctrllimited="true" ctrlrange="-27 27" forcelimited="true" forcerange="-27 27"/>
+    <motor name="left_joint5_torque" joint="openarm_left_joint5" gear="1" group="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
+    <motor name="left_joint6_torque" joint="openarm_left_joint6" gear="1" group="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
+    <motor name="left_joint7_torque" joint="openarm_left_joint7" gear="1" group="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
+    <general name="left_finger1_ctrl" class="motor_finger" joint="openarm_left_finger_joint1" input=""/>
+    <general name="left_finger2_ctrl" class="motor_finger" joint="openarm_left_finger_joint2" input=""/>
+    <motor name="right_joint1_torque" joint="openarm_right_joint1" gear="1" group="1" ctrllimited="true" ctrlrange="-40 40" forcelimited="true" forcerange="-40 40"/>
+    <motor name="right_joint2_torque" joint="openarm_right_joint2" gear="1" group="1" ctrllimited="true" ctrlrange="-40 40" forcelimited="true" forcerange="-40 40"/>
+    <motor name="right_joint3_torque" joint="openarm_right_joint3" gear="1" group="1" ctrllimited="true" ctrlrange="-27 27" forcelimited="true" forcerange="-27 27"/>
+    <motor name="right_joint4_torque" joint="openarm_right_joint4" gear="1" group="1" ctrllimited="true" ctrlrange="-27 27" forcelimited="true" forcerange="-27 27"/>
+    <motor name="right_joint5_torque" joint="openarm_right_joint5" gear="1" group="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
+    <motor name="right_joint6_torque" joint="openarm_right_joint6" gear="1" group="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
+    <motor name="right_joint7_torque" joint="openarm_right_joint7" gear="1" group="1" ctrllimited="true" ctrlrange="-7 7" forcelimited="true" forcerange="-7 7"/>
+    <general name="right_finger1_ctrl" class="motor_finger" joint="openarm_right_finger_joint1"/>
+    <general name="right_finger2_ctrl" class="motor_finger" joint="openarm_right_finger_joint2"/>
+    <velocity name="left_joint1_velocity" joint="openarm_left_joint1" kv="5" group="2" ctrllimited="true" ctrlrange="-16.754666 16.754666" forcelimited="true" forcerange="-40 40"/>
+    <position name="left_joint1_position" joint="openarm_left_joint1" kp="240" kv="5" group="3" ctrllimited="true" ctrlrange="-3.490659 1.396263" forcelimited="true" forcerange="-40 40"/>
+    <velocity name="left_joint2_velocity" joint="openarm_left_joint2" kv="5" group="2" ctrllimited="true" ctrlrange="-16.754666 16.754666" forcelimited="true" forcerange="-40 40"/>
+    <position name="left_joint2_position" joint="openarm_left_joint2" kp="240" kv="5" group="3" ctrllimited="true" ctrlrange="-2.705260341 0.1745326732" forcelimited="true" forcerange="-40 40"/>
+    <velocity name="left_joint3_velocity" joint="openarm_left_joint3" kv="3.5" group="2" ctrllimited="true" ctrlrange="-5.445426 5.445426" forcelimited="true" forcerange="-27 27"/>
+    <position name="left_joint3_position" joint="openarm_left_joint3" kp="120" kv="3.5" group="3" ctrllimited="true" ctrlrange="-1.570796 1.570796" forcelimited="true" forcerange="-27 27"/>
+    <velocity name="left_joint4_velocity" joint="openarm_left_joint4" kv="3.5" group="2" ctrllimited="true" ctrlrange="-5.445426 5.445426" forcelimited="true" forcerange="-27 27"/>
+    <position name="left_joint4_position" joint="openarm_left_joint4" kp="120" kv="3.5" group="3" ctrllimited="true" ctrlrange="-0.05 2.443461" forcelimited="true" forcerange="-27 27"/>
+    <velocity name="left_joint5_velocity" joint="openarm_left_joint5" kv="1.2" group="2" ctrllimited="true" ctrlrange="-20.943946 20.943946" forcelimited="true" forcerange="-7 7"/>
+    <position name="left_joint5_position" joint="openarm_left_joint5" kp="40" kv="1.2" group="3" ctrllimited="true" ctrlrange="-1.570796 1.570796" forcelimited="true" forcerange="-7 7"/>
+    <velocity name="left_joint6_velocity" joint="openarm_left_joint6" kv="1.2" group="2" ctrllimited="true" ctrlrange="-20.943946 20.943946" forcelimited="true" forcerange="-7 7"/>
+    <position name="left_joint6_position" joint="openarm_left_joint6" kp="40" kv="1.2" group="3" ctrllimited="true" ctrlrange="-0.785398 0.785398" forcelimited="true" forcerange="-7 7"/>
+    <velocity name="left_joint7_velocity" joint="openarm_left_joint7" kv="1.2" group="2" ctrllimited="true" ctrlrange="-20.943946 20.943946" forcelimited="true" forcerange="-7 7"/>
+    <position name="left_joint7_position" joint="openarm_left_joint7" kp="40" kv="1.2" group="3" ctrllimited="true" ctrlrange="-1.570796 1.570796" forcelimited="true" forcerange="-7 7"/>
+    <velocity name="right_joint1_velocity" joint="openarm_right_joint1" kv="5" group="2" ctrllimited="true" ctrlrange="-16.754666 16.754666" forcelimited="true" forcerange="-40 40"/>
+    <position name="right_joint1_position" joint="openarm_right_joint1" kp="240" kv="5" group="3" ctrllimited="true" ctrlrange="-1.396263 3.490659" forcelimited="true" forcerange="-40 40"/>
+    <velocity name="right_joint2_velocity" joint="openarm_right_joint2" kv="5" group="2" ctrllimited="true" ctrlrange="-16.754666 16.754666" forcelimited="true" forcerange="-40 40"/>
+    <position name="right_joint2_position" joint="openarm_right_joint2" kp="240" kv="5" group="3" ctrllimited="true" ctrlrange="-0.1745326732 2.705260341" forcelimited="true" forcerange="-40 40"/>
+    <velocity name="right_joint3_velocity" joint="openarm_right_joint3" kv="3.5" group="2" ctrllimited="true" ctrlrange="-5.445426 5.445426" forcelimited="true" forcerange="-27 27"/>
+    <position name="right_joint3_position" joint="openarm_right_joint3" kp="120" kv="3.5" group="3" ctrllimited="true" ctrlrange="-1.570796 1.570796" forcelimited="true" forcerange="-27 27"/>
+    <velocity name="right_joint4_velocity" joint="openarm_right_joint4" kv="3.5" group="2" ctrllimited="true" ctrlrange="-5.445426 5.445426" forcelimited="true" forcerange="-27 27"/>
+    <position name="right_joint4_position" joint="openarm_right_joint4" kp="120" kv="3.5" group="3" ctrllimited="true" ctrlrange="-0.05 2.443461" forcelimited="true" forcerange="-27 27"/>
+    <velocity name="right_joint5_velocity" joint="openarm_right_joint5" kv="1.2" group="2" ctrllimited="true" ctrlrange="-20.943946 20.943946" forcelimited="true" forcerange="-7 7"/>
+    <position name="right_joint5_position" joint="openarm_right_joint5" kp="40" kv="1.2" group="3" ctrllimited="true" ctrlrange="-1.570796 1.570796" forcelimited="true" forcerange="-7 7"/>
+    <velocity name="right_joint6_velocity" joint="openarm_right_joint6" kv="1.2" group="2" ctrllimited="true" ctrlrange="-20.943946 20.943946" forcelimited="true" forcerange="-7 7"/>
+    <position name="right_joint6_position" joint="openarm_right_joint6" kp="40" kv="1.2" group="3" ctrllimited="true" ctrlrange="-0.785398 0.785398" forcelimited="true" forcerange="-7 7"/>
+    <velocity name="right_joint7_velocity" joint="openarm_right_joint7" kv="1.2" group="2" ctrllimited="true" ctrlrange="-20.943946 20.943946" forcelimited="true" forcerange="-7 7"/>
+    <position name="right_joint7_position" joint="openarm_right_joint7" kp="40" kv="1.2" group="3" ctrllimited="true" ctrlrange="-1.570796 1.570796" forcelimited="true" forcerange="-7 7"/>
+  </actuator>
+
+  <sensor>
+    <framepos objtype="site" objname="world_site" name="world_site_pos"/>
+    <framequat objtype="site" objname="world_site" name="world_site_quat"/>
+    <framelinvel objtype="site" objname="world_site" name="world_site_linvel"/>
+    <frameangvel objtype="site" objname="world_site" name="world_site_angvel"/>
+    <velocimeter site="world_site" name="world_site_vel"/>
+  </sensor>
+
+  <custom>
+    <text name="gafro_kinematic_chain:openarm_left_hand_tcp" data="openarm_left_hand_tcp;"/>
+    <text name="gafro_control_group:left_arm" data="joint: openarm_left_joint1 openarm_left_joint2 openarm_left_joint3 openarm_left_joint4 openarm_left_joint5 openarm_left_joint6 openarm_left_joint7"/>
+    <text name="gafro_task_space:left" data="openarm_left_hand_tcp;left_arm"/>
+    <text name="gafro_kinematic_chain:openarm_right_hand_tcp" data="openarm_right_hand_tcp;"/>
+    <text name="gafro_control_group:right_arm" data="joint: openarm_right_joint1 openarm_right_joint2 openarm_right_joint3 openarm_right_joint4 openarm_right_joint5 openarm_right_joint6 openarm_right_joint7"/>
+    <text name="gafro_task_space:right" data="openarm_right_hand_tcp;right_arm"/>
+    <text name="gafro_task_space:bimanual" data="openarm_left_hand_tcp openarm_right_hand_tcp;left_arm right_arm"/>
+    <text name="gafro_kinematic_chain:openarm_body_link0" data="openarm_body_link0;"/>
+    <text name="gafro_kinematic_chain:openarm_left_link1" data="openarm_left_link1;"/>
+    <text name="gafro_kinematic_chain:openarm_left_link2" data="openarm_left_link2;"/>
+    <text name="gafro_kinematic_chain:openarm_left_link3" data="openarm_left_link3;"/>
+    <text name="gafro_kinematic_chain:openarm_left_link4" data="openarm_left_link4;"/>
+    <text name="gafro_kinematic_chain:openarm_left_link5" data="openarm_left_link5;"/>
+    <text name="gafro_kinematic_chain:openarm_left_link6" data="openarm_left_link6;"/>
+    <text name="gafro_kinematic_chain:openarm_left_link7" data="openarm_left_link7;"/>
+    <text name="gafro_kinematic_chain:openarm_left_hand" data="openarm_left_hand;"/>
+    <text name="gafro_kinematic_chain:openarm_left_right_finger" data="openarm_left_right_finger;"/>
+    <text name="gafro_kinematic_chain:openarm_left_left_finger" data="openarm_left_left_finger;"/>
+    <text name="gafro_kinematic_chain:openarm_right_link1" data="openarm_right_link1;"/>
+    <text name="gafro_kinematic_chain:openarm_right_link2" data="openarm_right_link2;"/>
+    <text name="gafro_kinematic_chain:openarm_right_link3" data="openarm_right_link3;"/>
+    <text name="gafro_kinematic_chain:openarm_right_link4" data="openarm_right_link4;"/>
+    <text name="gafro_kinematic_chain:openarm_right_link5" data="openarm_right_link5;"/>
+    <text name="gafro_kinematic_chain:openarm_right_link6" data="openarm_right_link6;"/>
+    <text name="gafro_kinematic_chain:openarm_right_link7" data="openarm_right_link7;"/>
+    <text name="gafro_kinematic_chain:openarm_right_hand" data="openarm_right_hand;"/>
+    <text name="gafro_kinematic_chain:openarm_right_right_finger" data="openarm_right_right_finger;"/>
+    <text name="gafro_kinematic_chain:openarm_right_left_finger" data="openarm_right_left_finger;"/>
+    <text name="gafro_collision_sphere:openarm_body_link0_b0" data="openarm_body_link0 -1.3649569646756975e-09 1.875964885007537e-09 0.2658310086472424 0.08471194981271193"/>
+    <text name="gafro_collision_sphere:openarm_body_link0_b1" data="openarm_body_link0 -7.72371980449168e-09 1.0918998843273669e-08 0.7345523223005331 0.05075129799720465"/>
+    <text name="gafro_collision_sphere:openarm_body_link0_b2" data="openarm_body_link0 9.066571179700174e-09 -1.3591635069563858e-08 0.05489775339897986 0.06568805612614469"/>
+    <text name="gafro_collision_sphere:openarm_body_link0_b3" data="openarm_body_link0 1.6103424864465175e-09 -2.215952853395868e-09 0.5118977339426499 0.07486527385467259"/>
+    <text name="gafro_collision_sphere:openarm_body_link0_b4" data="openarm_body_link0 -1.6828236555437547e-10 2.3018297280719656e-10 0.39473765163906743 0.07487374158760648"/>
+    <text name="gafro_collision_sphere:openarm_body_link0_b5" data="openarm_body_link0 8.185734805727946e-07 9.930831110695356e-07 0.1602913368762216 0.07490048427878106"/>
+    <text name="gafro_collision_sphere:openarm_body_link0_b6" data="openarm_body_link0 -6.593436185459113e-09 9.066671977379839e-09 0.6173690709587686 0.06567546731557955"/>
+    <text name="gafro_collision_sphere:openarm_body_link0_b7" data="openarm_body_link0 -8.224321858921223e-07 -9.877787589009622e-07 0.6760094988765858 0.05748977734157696"/>
+    <text name="gafro_collision_sphere:openarm_left_link0_b0" data="openarm_body_link0 0.001006394438296551 0.06223397436603783 0.7148020701646728 0.06409895022403173"/>
+    <text name="gafro_collision_sphere:openarm_left_link0_b1" data="openarm_body_link0 -0.0010350511171187996 0.060988373230485365 0.6817834891557945 0.06387639906873609"/>
+    <text name="gafro_collision_sphere:openarm_left_link1_b0" data="openarm_left_link1 0.006910574911760497 4.030040569270242e-05 0.06050175339754834 0.05953663662267616"/>
+    <text name="gafro_collision_sphere:openarm_left_link1_b1" data="openarm_left_link1 0.004597355135451741 0.0029895848098127026 0.032563741763369076 0.06407268107927717"/>
+    <text name="gafro_collision_sphere:openarm_left_link2_b0" data="openarm_left_link2 0.02188038305032096 0.0019767526840713456 0.03629047623673199 0.0561662600832541"/>
+    <text name="gafro_collision_sphere:openarm_left_link2_b1" data="openarm_left_link2 -0.0018768633541324572 9.055158819909348e-05 0.00041574111317085877 0.052454848427411736"/>
+    <text name="gafro_collision_sphere:openarm_left_link3_b0" data="openarm_left_link3 -0.004197957980347768 -0.0009499316064590614 0.041295614393158514 0.0587039023791357"/>
+    <text name="gafro_collision_sphere:openarm_left_link3_b1" data="openarm_left_link3 -0.014042747119659 0.00013358772782408272 0.12450503295900835 0.0722304104675374"/>
+    <text name="gafro_collision_sphere:openarm_left_link4_b0" data="openarm_left_link4 -0.004036503497159187 -0.04592690729871321 0.03792156702304466 0.07405503883328841"/>
+    <text name="gafro_collision_sphere:openarm_left_link4_b1" data="openarm_left_link4 -0.0033077469989406523 -0.01658411424369134 0.03789671898901467 0.07384035759036851"/>
+    <text name="gafro_collision_sphere:openarm_left_link5_b0" data="openarm_left_link5 0.0021926707885864226 -7.141028241827293e-05 0.034441890067821467 0.050164627972037065"/>
+    <text name="gafro_collision_sphere:openarm_left_link5_b1" data="openarm_left_link5 -2.2815845440187806e-05 -0.0001152981950432857 0.07906112996353917 0.0660345215932208"/>
+    <text name="gafro_collision_sphere:openarm_left_link6_b0" data="openarm_left_link6 -0.03740723598188684 0.001401440515917472 -1.1275095197785977e-05 0.04721006710842432"/>
+    <text name="gafro_collision_sphere:openarm_left_link7_b0" data="openarm_left_link7 3.936485338270501e-05 3.633229894240202e-05 0.06750732401278584 0.04230182686444938"/>
+    <text name="gafro_collision_sphere:openarm_left_link7_b1" data="openarm_left_link7 -0.0009203327664170605 -0.02653380563939502 0.021087163410181086 0.042411170038263786"/>
+    <text name="gafro_collision_sphere:openarm_left_hand_b0" data="openarm_left_hand 0.0005917545828308293 -0.027690492154602744 0.0025663226221010853 0.05527644074353571"/>
+    <text name="gafro_collision_sphere:openarm_left_hand_b1" data="openarm_left_hand -0.00011106455801084499 0.03758850172278901 0.0019226537734432767 0.05542918623913223"/>
+    <text name="gafro_collision_sphere:openarm_left_right_finger_b0" data="openarm_left_right_finger 0.011139620088426104 -0.01006551842306588 0.03229603167253881 0.05553595967916051"/>
+    <text name="gafro_collision_sphere:openarm_left_left_finger_b0" data="openarm_left_left_finger 0.011139620088426097 0.010065518423065925 0.032296031672539145 0.055535959679160515"/>
+    <text name="gafro_collision_sphere:openarm_right_link0_b0" data="openarm_body_link0 0.0044793573552333816 -0.06223960893273863 0.7119048686041626 0.06750941993131963"/>
+    <text name="gafro_collision_sphere:openarm_right_link0_b1" data="openarm_body_link0 -0.005545846839751802 -0.06098295264936966 0.6836760100998704 0.06733723533555724"/>
+    <text name="gafro_collision_sphere:openarm_right_link1_b0" data="openarm_right_link1 0.006641549298668366 -2.9746111925189233e-05 0.06059310743126717 0.059553049923416604"/>
+    <text name="gafro_collision_sphere:openarm_right_link1_b1" data="openarm_right_link1 0.004596540507209339 -0.002988929686283413 0.03256322450620782 0.06407153899721832"/>
+    <text name="gafro_collision_sphere:openarm_right_link2_b0" data="openarm_right_link2 0.021880383050320952 -0.0019767526840713413 0.036290476236732046 0.056166260083254094"/>
+    <text name="gafro_collision_sphere:openarm_right_link2_b1" data="openarm_right_link2 -0.001876863354132445 -9.055158819908896e-05 0.00041574111317090566 0.05245484842741174"/>
+    <text name="gafro_collision_sphere:openarm_right_link3_b0" data="openarm_right_link3 -0.014042747119659 -0.00013358772782408277 0.12450503295900835 0.0722304104675374"/>
+    <text name="gafro_collision_sphere:openarm_right_link3_b1" data="openarm_right_link3 -0.004197957980347766 0.000949931606459062 0.041295614393158514 0.05870390237913569"/>
+    <text name="gafro_collision_sphere:openarm_right_link4_b0" data="openarm_right_link4 -0.004036503497159187 -0.04592690729871321 0.03792156702304466 0.07405503883328841"/>
+    <text name="gafro_collision_sphere:openarm_right_link4_b1" data="openarm_right_link4 -0.0033077469989406523 -0.01658411424369134 0.03789671898901467 0.07384035759036851"/>
+    <text name="gafro_collision_sphere:openarm_right_link5_b0" data="openarm_right_link5 0.0021926707885864235 7.141028241827032e-05 0.03444189006782152 0.05016462797203707"/>
+    <text name="gafro_collision_sphere:openarm_right_link5_b1" data="openarm_right_link5 -2.2815845440186234e-05 0.00011529819504328284 0.07906112996353923 0.06603452159322079"/>
+    <text name="gafro_collision_sphere:openarm_right_link6_b0" data="openarm_right_link6 -0.03740723598188683 -0.0014014405159174718 -1.1275095197896606e-05 0.04721006710842431"/>
+    <text name="gafro_collision_sphere:openarm_right_link7_b0" data="openarm_right_link7 -0.0007202018408569912 0.02493078511515319 0.021807301782773268 0.04346128152851751"/>
+    <text name="gafro_collision_sphere:openarm_right_link7_b1" data="openarm_right_link7 3.9175518342955814e-05 -2.6724165879704893e-05 0.06751022480162654 0.04229927214831683"/>
+    <text name="gafro_collision_sphere:openarm_right_hand_b0" data="openarm_right_hand 0.0005917545828308293 -0.027690492154602744 0.0025663226221010853 0.05527644074353571"/>
+    <text name="gafro_collision_sphere:openarm_right_hand_b1" data="openarm_right_hand -0.00011106455801084499 0.03758850172278901 0.0019226537734432767 0.05542918623913223"/>
+    <text name="gafro_collision_sphere:openarm_right_right_finger_b0" data="openarm_right_right_finger 0.011139620088426104 -0.01006551842306588 0.03229603167253881 0.05553595967916051"/>
+    <text name="gafro_collision_sphere:openarm_right_left_finger_b0" data="openarm_right_left_finger 0.011139620088426097 0.010065518423065925 0.032296031672539145 0.055535959679160515"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_left_link4_b0" data="openarm_body_link0_b3 openarm_left_link4_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_left_link4_b1" data="openarm_body_link0_b3 openarm_left_link4_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_left_link5_b1" data="openarm_body_link0_b0 openarm_left_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_left_link5_b0" data="openarm_body_link0_b3 openarm_left_link5_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_left_link5_b1" data="openarm_body_link0_b3 openarm_left_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_left_link5_b1" data="openarm_body_link0_b4 openarm_left_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b6|openarm_left_link5_b1" data="openarm_body_link0_b6 openarm_left_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_left_link6_b0" data="openarm_body_link0_b0 openarm_left_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b1|openarm_left_link6_b0" data="openarm_body_link0_b1 openarm_left_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_left_link6_b0" data="openarm_body_link0_b3 openarm_left_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_left_link6_b0" data="openarm_body_link0_b4 openarm_left_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b6|openarm_left_link6_b0" data="openarm_body_link0_b6 openarm_left_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b7|openarm_left_link6_b0" data="openarm_body_link0_b7 openarm_left_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_left_link7_b0" data="openarm_body_link0_b0 openarm_left_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b1|openarm_left_link7_b0" data="openarm_body_link0_b1 openarm_left_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_left_link7_b0" data="openarm_body_link0_b3 openarm_left_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_left_link7_b1" data="openarm_body_link0_b3 openarm_left_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_left_link7_b0" data="openarm_body_link0_b4 openarm_left_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_left_link7_b1" data="openarm_body_link0_b4 openarm_left_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b6|openarm_left_link7_b0" data="openarm_body_link0_b6 openarm_left_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b6|openarm_left_link7_b1" data="openarm_body_link0_b6 openarm_left_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b7|openarm_left_link7_b0" data="openarm_body_link0_b7 openarm_left_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_left_hand_b0" data="openarm_body_link0_b0 openarm_left_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_left_hand_b1" data="openarm_body_link0_b0 openarm_left_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b1|openarm_left_hand_b1" data="openarm_body_link0_b1 openarm_left_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_left_hand_b1" data="openarm_body_link0_b3 openarm_left_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_left_hand_b0" data="openarm_body_link0_b4 openarm_left_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_left_hand_b1" data="openarm_body_link0_b4 openarm_left_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b6|openarm_left_hand_b1" data="openarm_body_link0_b6 openarm_left_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b7|openarm_left_hand_b1" data="openarm_body_link0_b7 openarm_left_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_left_right_finger_b0" data="openarm_body_link0_b0 openarm_left_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b1|openarm_left_right_finger_b0" data="openarm_body_link0_b1 openarm_left_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_left_right_finger_b0" data="openarm_body_link0_b3 openarm_left_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_left_right_finger_b0" data="openarm_body_link0_b4 openarm_left_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b5|openarm_left_right_finger_b0" data="openarm_body_link0_b5 openarm_left_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b6|openarm_left_right_finger_b0" data="openarm_body_link0_b6 openarm_left_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b7|openarm_left_right_finger_b0" data="openarm_body_link0_b7 openarm_left_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_left_left_finger_b0" data="openarm_body_link0_b0 openarm_left_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b1|openarm_left_left_finger_b0" data="openarm_body_link0_b1 openarm_left_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_left_left_finger_b0" data="openarm_body_link0_b3 openarm_left_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_left_left_finger_b0" data="openarm_body_link0_b4 openarm_left_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b5|openarm_left_left_finger_b0" data="openarm_body_link0_b5 openarm_left_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b6|openarm_left_left_finger_b0" data="openarm_body_link0_b6 openarm_left_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b7|openarm_left_left_finger_b0" data="openarm_body_link0_b7 openarm_left_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_right_link4_b0" data="openarm_body_link0_b3 openarm_right_link4_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_right_link4_b1" data="openarm_body_link0_b3 openarm_right_link4_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_right_link5_b0" data="openarm_body_link0_b3 openarm_right_link5_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_right_link5_b1" data="openarm_body_link0_b3 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_right_link5_b0" data="openarm_body_link0_b4 openarm_right_link5_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_right_link5_b1" data="openarm_body_link0_b4 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b6|openarm_right_link5_b1" data="openarm_body_link0_b6 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b7|openarm_right_link5_b1" data="openarm_body_link0_b7 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_right_link6_b0" data="openarm_body_link0_b0 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_right_link6_b0" data="openarm_body_link0_b3 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_right_link6_b0" data="openarm_body_link0_b4 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b6|openarm_right_link6_b0" data="openarm_body_link0_b6 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b7|openarm_right_link6_b0" data="openarm_body_link0_b7 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_right_link7_b1" data="openarm_body_link0_b0 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b1|openarm_right_link7_b0" data="openarm_body_link0_b1 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b1|openarm_right_link7_b1" data="openarm_body_link0_b1 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_right_link7_b0" data="openarm_body_link0_b3 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_right_link7_b1" data="openarm_body_link0_b3 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_right_link7_b0" data="openarm_body_link0_b4 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_right_link7_b1" data="openarm_body_link0_b4 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b6|openarm_right_link7_b0" data="openarm_body_link0_b6 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b6|openarm_right_link7_b1" data="openarm_body_link0_b6 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b7|openarm_right_link7_b0" data="openarm_body_link0_b7 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_right_hand_b0" data="openarm_body_link0_b0 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_right_hand_b1" data="openarm_body_link0_b0 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b1|openarm_right_hand_b0" data="openarm_body_link0_b1 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b1|openarm_right_hand_b1" data="openarm_body_link0_b1 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_right_hand_b0" data="openarm_body_link0_b3 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_right_hand_b1" data="openarm_body_link0_b3 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_right_hand_b0" data="openarm_body_link0_b4 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_right_hand_b1" data="openarm_body_link0_b4 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b5|openarm_right_hand_b0" data="openarm_body_link0_b5 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b6|openarm_right_hand_b1" data="openarm_body_link0_b6 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b7|openarm_right_hand_b1" data="openarm_body_link0_b7 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_right_right_finger_b0" data="openarm_body_link0_b0 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b1|openarm_right_right_finger_b0" data="openarm_body_link0_b1 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_right_right_finger_b0" data="openarm_body_link0_b3 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_right_right_finger_b0" data="openarm_body_link0_b4 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b5|openarm_right_right_finger_b0" data="openarm_body_link0_b5 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b6|openarm_right_right_finger_b0" data="openarm_body_link0_b6 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b7|openarm_right_right_finger_b0" data="openarm_body_link0_b7 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b0|openarm_right_left_finger_b0" data="openarm_body_link0_b0 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b1|openarm_right_left_finger_b0" data="openarm_body_link0_b1 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b3|openarm_right_left_finger_b0" data="openarm_body_link0_b3 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b4|openarm_right_left_finger_b0" data="openarm_body_link0_b4 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b5|openarm_right_left_finger_b0" data="openarm_body_link0_b5 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b6|openarm_right_left_finger_b0" data="openarm_body_link0_b6 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_body_link0_b7|openarm_right_left_finger_b0" data="openarm_body_link0_b7 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b0|openarm_left_link5_b1" data="openarm_left_link0_b0 openarm_left_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b1|openarm_left_link5_b1" data="openarm_left_link0_b1 openarm_left_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b0|openarm_left_link6_b0" data="openarm_left_link0_b0 openarm_left_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b1|openarm_left_link6_b0" data="openarm_left_link0_b1 openarm_left_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b0|openarm_left_link7_b0" data="openarm_left_link0_b0 openarm_left_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b0|openarm_left_link7_b1" data="openarm_left_link0_b0 openarm_left_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b1|openarm_left_link7_b0" data="openarm_left_link0_b1 openarm_left_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b1|openarm_left_link7_b1" data="openarm_left_link0_b1 openarm_left_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b0|openarm_left_hand_b1" data="openarm_left_link0_b0 openarm_left_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b1|openarm_left_hand_b1" data="openarm_left_link0_b1 openarm_left_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b0|openarm_left_right_finger_b0" data="openarm_left_link0_b0 openarm_left_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b1|openarm_left_right_finger_b0" data="openarm_left_link0_b1 openarm_left_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b0|openarm_left_left_finger_b0" data="openarm_left_link0_b0 openarm_left_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b1|openarm_left_left_finger_b0" data="openarm_left_link0_b1 openarm_left_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b1|openarm_right_link5_b1" data="openarm_left_link0_b1 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b0|openarm_right_link6_b0" data="openarm_left_link0_b0 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b1|openarm_right_link6_b0" data="openarm_left_link0_b1 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b0|openarm_right_link7_b1" data="openarm_left_link0_b0 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b1|openarm_right_link7_b0" data="openarm_left_link0_b1 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b1|openarm_right_link7_b1" data="openarm_left_link0_b1 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b0|openarm_right_hand_b0" data="openarm_left_link0_b0 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b0|openarm_right_hand_b1" data="openarm_left_link0_b0 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b1|openarm_right_hand_b0" data="openarm_left_link0_b1 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b0|openarm_right_right_finger_b0" data="openarm_left_link0_b0 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b1|openarm_right_right_finger_b0" data="openarm_left_link0_b1 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b0|openarm_right_left_finger_b0" data="openarm_left_link0_b0 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link0_b1|openarm_right_left_finger_b0" data="openarm_left_link0_b1 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link1_b0|openarm_left_link7_b0" data="openarm_left_link1_b0 openarm_left_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link1_b1|openarm_left_link7_b0" data="openarm_left_link1_b1 openarm_left_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link1_b0|openarm_left_hand_b1" data="openarm_left_link1_b0 openarm_left_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link1_b1|openarm_left_hand_b1" data="openarm_left_link1_b1 openarm_left_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link1_b0|openarm_left_right_finger_b0" data="openarm_left_link1_b0 openarm_left_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link1_b1|openarm_left_right_finger_b0" data="openarm_left_link1_b1 openarm_left_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link1_b0|openarm_left_left_finger_b0" data="openarm_left_link1_b0 openarm_left_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link1_b1|openarm_left_left_finger_b0" data="openarm_left_link1_b1 openarm_left_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link1_b0|openarm_right_link7_b1" data="openarm_left_link1_b0 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link1_b1|openarm_right_link7_b1" data="openarm_left_link1_b1 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link1_b0|openarm_right_hand_b0" data="openarm_left_link1_b0 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link1_b1|openarm_right_hand_b0" data="openarm_left_link1_b1 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link1_b0|openarm_right_right_finger_b0" data="openarm_left_link1_b0 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link1_b1|openarm_right_right_finger_b0" data="openarm_left_link1_b1 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link1_b0|openarm_right_left_finger_b0" data="openarm_left_link1_b0 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link1_b1|openarm_right_left_finger_b0" data="openarm_left_link1_b1 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link2_b0|openarm_left_hand_b1" data="openarm_left_link2_b0 openarm_left_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link2_b1|openarm_left_hand_b1" data="openarm_left_link2_b1 openarm_left_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link2_b0|openarm_right_hand_b0" data="openarm_left_link2_b0 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link2_b1|openarm_right_hand_b0" data="openarm_left_link2_b1 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link2_b0|openarm_right_right_finger_b0" data="openarm_left_link2_b0 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link2_b1|openarm_right_right_finger_b0" data="openarm_left_link2_b1 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link2_b0|openarm_right_left_finger_b0" data="openarm_left_link2_b0 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link2_b1|openarm_right_left_finger_b0" data="openarm_left_link2_b1 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link3_b0|openarm_left_link5_b0" data="openarm_left_link3_b0 openarm_left_link5_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link3_b0|openarm_left_link5_b1" data="openarm_left_link3_b0 openarm_left_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link3_b1|openarm_right_link7_b0" data="openarm_left_link3_b1 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link3_b1|openarm_right_link7_b1" data="openarm_left_link3_b1 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link3_b0|openarm_right_hand_b0" data="openarm_left_link3_b0 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link3_b1|openarm_right_hand_b0" data="openarm_left_link3_b1 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link3_b1|openarm_right_hand_b1" data="openarm_left_link3_b1 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link3_b0|openarm_right_right_finger_b0" data="openarm_left_link3_b0 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link3_b1|openarm_right_right_finger_b0" data="openarm_left_link3_b1 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link3_b0|openarm_right_left_finger_b0" data="openarm_left_link3_b0 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link3_b1|openarm_right_left_finger_b0" data="openarm_left_link3_b1 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link4_b0|openarm_right_link5_b1" data="openarm_left_link4_b0 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link4_b1|openarm_right_link5_b1" data="openarm_left_link4_b1 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link4_b0|openarm_right_link6_b0" data="openarm_left_link4_b0 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link4_b1|openarm_right_link6_b0" data="openarm_left_link4_b1 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link4_b0|openarm_right_link7_b1" data="openarm_left_link4_b0 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link4_b1|openarm_right_link7_b1" data="openarm_left_link4_b1 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link4_b0|openarm_right_hand_b0" data="openarm_left_link4_b0 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link4_b0|openarm_right_hand_b1" data="openarm_left_link4_b0 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link4_b1|openarm_right_hand_b0" data="openarm_left_link4_b1 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link4_b1|openarm_right_hand_b1" data="openarm_left_link4_b1 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link4_b0|openarm_right_right_finger_b0" data="openarm_left_link4_b0 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link4_b1|openarm_right_right_finger_b0" data="openarm_left_link4_b1 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link4_b0|openarm_right_left_finger_b0" data="openarm_left_link4_b0 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link4_b1|openarm_right_left_finger_b0" data="openarm_left_link4_b1 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b1|openarm_right_link0_b1" data="openarm_left_link5_b1 openarm_right_link0_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b0|openarm_right_link5_b1" data="openarm_left_link5_b0 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b1|openarm_right_link5_b0" data="openarm_left_link5_b1 openarm_right_link5_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b1|openarm_right_link5_b1" data="openarm_left_link5_b1 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b0|openarm_right_link6_b0" data="openarm_left_link5_b0 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b1|openarm_right_link6_b0" data="openarm_left_link5_b1 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b0|openarm_right_link7_b1" data="openarm_left_link5_b0 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b1|openarm_right_link7_b0" data="openarm_left_link5_b1 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b1|openarm_right_link7_b1" data="openarm_left_link5_b1 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b0|openarm_right_hand_b0" data="openarm_left_link5_b0 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b0|openarm_right_hand_b1" data="openarm_left_link5_b0 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b1|openarm_right_hand_b0" data="openarm_left_link5_b1 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b1|openarm_right_hand_b1" data="openarm_left_link5_b1 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b0|openarm_right_right_finger_b0" data="openarm_left_link5_b0 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b1|openarm_right_right_finger_b0" data="openarm_left_link5_b1 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b0|openarm_right_left_finger_b0" data="openarm_left_link5_b0 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link5_b1|openarm_right_left_finger_b0" data="openarm_left_link5_b1 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_link0_b0" data="openarm_left_link6_b0 openarm_right_link0_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_link0_b1" data="openarm_left_link6_b0 openarm_right_link0_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_link4_b0" data="openarm_left_link6_b0 openarm_right_link4_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_link4_b1" data="openarm_left_link6_b0 openarm_right_link4_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_link5_b0" data="openarm_left_link6_b0 openarm_right_link5_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_link5_b1" data="openarm_left_link6_b0 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_link6_b0" data="openarm_left_link6_b0 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_link7_b0" data="openarm_left_link6_b0 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_link7_b1" data="openarm_left_link6_b0 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_hand_b0" data="openarm_left_link6_b0 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_hand_b1" data="openarm_left_link6_b0 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_right_finger_b0" data="openarm_left_link6_b0 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link6_b0|openarm_right_left_finger_b0" data="openarm_left_link6_b0 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_link0_b0" data="openarm_left_link7_b0 openarm_right_link0_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_link0_b1" data="openarm_left_link7_b0 openarm_right_link0_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b1|openarm_right_link0_b1" data="openarm_left_link7_b1 openarm_right_link0_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_link1_b0" data="openarm_left_link7_b0 openarm_right_link1_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_link1_b1" data="openarm_left_link7_b0 openarm_right_link1_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_link3_b0" data="openarm_left_link7_b0 openarm_right_link3_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_link3_b1" data="openarm_left_link7_b0 openarm_right_link3_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b1|openarm_right_link3_b0" data="openarm_left_link7_b1 openarm_right_link3_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_link4_b0" data="openarm_left_link7_b0 openarm_right_link4_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_link4_b1" data="openarm_left_link7_b0 openarm_right_link4_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_link5_b0" data="openarm_left_link7_b0 openarm_right_link5_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_link5_b1" data="openarm_left_link7_b0 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b1|openarm_right_link5_b1" data="openarm_left_link7_b1 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_link6_b0" data="openarm_left_link7_b0 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b1|openarm_right_link6_b0" data="openarm_left_link7_b1 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_link7_b0" data="openarm_left_link7_b0 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_link7_b1" data="openarm_left_link7_b0 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b1|openarm_right_link7_b0" data="openarm_left_link7_b1 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b1|openarm_right_link7_b1" data="openarm_left_link7_b1 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_hand_b0" data="openarm_left_link7_b0 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_hand_b1" data="openarm_left_link7_b0 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b1|openarm_right_hand_b0" data="openarm_left_link7_b1 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b1|openarm_right_hand_b1" data="openarm_left_link7_b1 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_right_finger_b0" data="openarm_left_link7_b0 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b1|openarm_right_right_finger_b0" data="openarm_left_link7_b1 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b0|openarm_right_left_finger_b0" data="openarm_left_link7_b0 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_link7_b1|openarm_right_left_finger_b0" data="openarm_left_link7_b1 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link0_b0" data="openarm_left_hand_b1 openarm_right_link0_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link0_b1" data="openarm_left_hand_b1 openarm_right_link0_b1"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_link1_b0" data="openarm_left_hand_b0 openarm_right_link1_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link1_b0" data="openarm_left_hand_b1 openarm_right_link1_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link1_b1" data="openarm_left_hand_b1 openarm_right_link1_b1"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link2_b0" data="openarm_left_hand_b1 openarm_right_link2_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link2_b1" data="openarm_left_hand_b1 openarm_right_link2_b1"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link3_b0" data="openarm_left_hand_b1 openarm_right_link3_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link3_b1" data="openarm_left_hand_b1 openarm_right_link3_b1"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_link4_b0" data="openarm_left_hand_b0 openarm_right_link4_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link4_b0" data="openarm_left_hand_b1 openarm_right_link4_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link4_b1" data="openarm_left_hand_b1 openarm_right_link4_b1"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_link5_b0" data="openarm_left_hand_b0 openarm_right_link5_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_link5_b1" data="openarm_left_hand_b0 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link5_b0" data="openarm_left_hand_b1 openarm_right_link5_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link5_b1" data="openarm_left_hand_b1 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_link6_b0" data="openarm_left_hand_b0 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link6_b0" data="openarm_left_hand_b1 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_link7_b0" data="openarm_left_hand_b0 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_link7_b1" data="openarm_left_hand_b0 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link7_b0" data="openarm_left_hand_b1 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_link7_b1" data="openarm_left_hand_b1 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_hand_b0" data="openarm_left_hand_b0 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_hand_b1" data="openarm_left_hand_b0 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_hand_b0" data="openarm_left_hand_b1 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_hand_b1" data="openarm_left_hand_b1 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_right_finger_b0" data="openarm_left_hand_b0 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_right_finger_b0" data="openarm_left_hand_b1 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b0|openarm_right_left_finger_b0" data="openarm_left_hand_b0 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_hand_b1|openarm_right_left_finger_b0" data="openarm_left_hand_b1 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_link0_b0" data="openarm_left_right_finger_b0 openarm_right_link0_b0"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_link0_b1" data="openarm_left_right_finger_b0 openarm_right_link0_b1"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_link1_b0" data="openarm_left_right_finger_b0 openarm_right_link1_b0"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_link1_b1" data="openarm_left_right_finger_b0 openarm_right_link1_b1"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_link2_b0" data="openarm_left_right_finger_b0 openarm_right_link2_b0"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_link2_b1" data="openarm_left_right_finger_b0 openarm_right_link2_b1"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_link3_b0" data="openarm_left_right_finger_b0 openarm_right_link3_b0"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_link3_b1" data="openarm_left_right_finger_b0 openarm_right_link3_b1"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_link4_b0" data="openarm_left_right_finger_b0 openarm_right_link4_b0"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_link4_b1" data="openarm_left_right_finger_b0 openarm_right_link4_b1"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_link5_b0" data="openarm_left_right_finger_b0 openarm_right_link5_b0"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_link5_b1" data="openarm_left_right_finger_b0 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_link6_b0" data="openarm_left_right_finger_b0 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_link7_b0" data="openarm_left_right_finger_b0 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_link7_b1" data="openarm_left_right_finger_b0 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_hand_b0" data="openarm_left_right_finger_b0 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_hand_b1" data="openarm_left_right_finger_b0 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_right_finger_b0" data="openarm_left_right_finger_b0 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_right_finger_b0|openarm_right_left_finger_b0" data="openarm_left_right_finger_b0 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_left_finger_b0|openarm_right_link3_b0" data="openarm_left_left_finger_b0 openarm_right_link3_b0"/>
+    <text name="gafro_collision_pair:openarm_left_left_finger_b0|openarm_right_link3_b1" data="openarm_left_left_finger_b0 openarm_right_link3_b1"/>
+    <text name="gafro_collision_pair:openarm_left_left_finger_b0|openarm_right_link4_b0" data="openarm_left_left_finger_b0 openarm_right_link4_b0"/>
+    <text name="gafro_collision_pair:openarm_left_left_finger_b0|openarm_right_link4_b1" data="openarm_left_left_finger_b0 openarm_right_link4_b1"/>
+    <text name="gafro_collision_pair:openarm_left_left_finger_b0|openarm_right_link5_b0" data="openarm_left_left_finger_b0 openarm_right_link5_b0"/>
+    <text name="gafro_collision_pair:openarm_left_left_finger_b0|openarm_right_link5_b1" data="openarm_left_left_finger_b0 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_left_left_finger_b0|openarm_right_link6_b0" data="openarm_left_left_finger_b0 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_left_left_finger_b0|openarm_right_link7_b0" data="openarm_left_left_finger_b0 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_left_left_finger_b0|openarm_right_link7_b1" data="openarm_left_left_finger_b0 openarm_right_link7_b1"/>
+    <text name="gafro_collision_pair:openarm_left_left_finger_b0|openarm_right_hand_b0" data="openarm_left_left_finger_b0 openarm_right_hand_b0"/>
+    <text name="gafro_collision_pair:openarm_left_left_finger_b0|openarm_right_hand_b1" data="openarm_left_left_finger_b0 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_left_left_finger_b0|openarm_right_right_finger_b0" data="openarm_left_left_finger_b0 openarm_right_right_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_left_left_finger_b0|openarm_right_left_finger_b0" data="openarm_left_left_finger_b0 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_right_link0_b0|openarm_right_link5_b1" data="openarm_right_link0_b0 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_right_link0_b1|openarm_right_link5_b1" data="openarm_right_link0_b1 openarm_right_link5_b1"/>
+    <text name="gafro_collision_pair:openarm_right_link0_b0|openarm_right_link6_b0" data="openarm_right_link0_b0 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_right_link0_b1|openarm_right_link6_b0" data="openarm_right_link0_b1 openarm_right_link6_b0"/>
+    <text name="gafro_collision_pair:openarm_right_link0_b0|openarm_right_link7_b0" data="openarm_right_link0_b0 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_right_link0_b1|openarm_right_link7_b0" data="openarm_right_link0_b1 openarm_right_link7_b0"/>
+    <text name="gafro_collision_pair:openarm_right_link0_b0|openarm_right_hand_b1" data="openarm_right_link0_b0 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_right_link0_b1|openarm_right_hand_b1" data="openarm_right_link0_b1 openarm_right_hand_b1"/>
+    <text name="gafro_collision_pair:openarm_right_link0_b0|openarm_right_left_finger_b0" data="openarm_right_link0_b0 openarm_right_left_finger_b0"/>
+    <text name="gafro_collision_pair:openarm_right_link3_b0|openarm_right_link5_b0" data="openarm_right_link3_b0 openarm_right_link5_b0"/>
+    <text name="gafro_collision_pair:openarm_right_link3_b1|openarm_right_link5_b0" data="openarm_right_link3_b1 openarm_right_link5_b0"/>
+  </custom>
+
+  <keyframe>
+    <key name="ready" qpos="0 -0.7 0.5 1.8 -1 -0.1 -0.55 0 0 0 0.7 -0.5 1.8 -1 -0.1 -0.55 0 0"/>
+    <key name="rest" qpos="0 0 0 0.3 0 0 0 0 0 0 0 0 0.3 0 0 0 0 0"/>
+  </keyframe>
+</mujoco>
