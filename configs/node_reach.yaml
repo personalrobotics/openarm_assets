@@ -3,14 +3,14 @@
 #
 # node.yaml with the `reach` behaviour: a pose goes in on `right/reach/target`, the plugin plans the hand to it (gafro's iLQR, seeded with a posture
 # on the pose's self-motion charts) and publishes the path on `goal`, and go_to_position follows it. `reach_failed` counts the poses that no path reached.
-# The plugin is libgafro_opendubs_reach_task_nodes.so (gafro-opendubs-nodes): put its directory on GAFRO_PLUGIN_PATH.
+# The plugin is libgafro_self_motion_charts_reach_task_nodes.so (lab/self-motion-charts, cpp/task_nodes): put its directory on GAFRO_PLUGIN_PATH.
 #
 #   gafro-robot-node --config configs/node_reach.yaml --transport local --run-for 10
 #
-# `charts` is what ssik derives for the arm, in Python (python tools/srs_constants.py MODEL right, in gafro-opendubs-nodes); it follows the model.
+# `charts` is what ssik derives for the arm, in Python (python cpp/task_nodes/srs_constants.py MODEL right, in self-motion-charts); it follows the model.
 extends: node.yaml
 
-task_nodes: [{name: opendubs_reach}]
+task_nodes: [{name: self_motion_charts_reach}]
 
 events: [reach_failed]
 
