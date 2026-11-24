@@ -14,11 +14,13 @@
 # posture the node started in: a second controller for an arm (a go-to-position, say) would, when switched to, send the other arm
 # back to that posture. A move from where an arm is to a goal is a path that starts at the arm's posture (a planner's, or `reach`).
 #
-#   gafro-robot-node --config configs/node.yaml --transport local --run-for 10
+#   gafro-robot-node --config src/openarm_assets/configs/node.yaml --transport local --run-for 10
+#
+# Installed, it is the package's: a robot's config says `extends: openarm_assets:configs/node.yaml`.
 #
 # The robot's own variants extend this file: the hardware backend, the driver's permit as a guard, and a transport.
 robot:
-  model: src/openarm_assets/models/openarm/generated/openarm_bimanual_decorated.xml
+  model: ../models/openarm/generated/openarm_bimanual_decorated.xml   # beside this file, in the checkout and in the installed package
   backend: sim
   task_space: bimanual          # the model's two-arm task space: the controller's
 

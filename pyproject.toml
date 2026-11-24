@@ -38,6 +38,8 @@ openarm_assets = [
     "models/**/*.mtl",
     "models/**/README.md",
     "models/**/LICENSE",
+    # gafro-robot-node configs of the arm, which a robot's config extends as openarm_assets:configs/<file>.
+    "configs/*.yaml",
 ]
 
 
