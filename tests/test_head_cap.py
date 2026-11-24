@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Tobias Loew <tobias.loew@gafro.ch>
 # SPDX-License-Identifier: MPL-2.0
-"""The head-cap variant: both arms, joint 2 capped on the outward side by a head beside them, and otherwise the decorated model."""
+"""The head-cap variant: both arms, joint 2 capped on the outward side by a head beside them, every joint at the driver's velocity limit."""
 import mujoco
 import numpy as np
 
@@ -28,9 +28,10 @@ def test_joint2_is_capped_outward_on_each_arm_and_the_other_joints_are_the_arms(
 
 
 def test_the_committed_head_cap_model_is_what_the_generator_builds():
-    from openarm_assets.assembly import build_openarm, head_cap_ranges
+    from openarm_assets.assembly import DRIVER_VELOCITY_LIMIT, build_openarm, head_cap_ranges
 
-    spec = build_openarm(joint_ranges=head_cap_ranges())
+    # The velocity actuators' command ranges are the joints' velocity limits: capped at what the driver runs.
+    spec = build_openarm(joint_ranges=head_cap_ranges(), velocity_limit=DRIVER_VELOCITY_LIMIT)
     built = spec.compile()
     committed = mujoco.MjModel.from_xml_path(str(HEAD_CAP_MODEL))
     assert np.allclose(built.jnt_range, committed.jnt_range, atol=1e-5)
