@@ -28,11 +28,11 @@ task_spaces:
   right: {pose: right/pose}
   left: {pose: left/pose}
 
-inputs:
-  posture_right: {task_space: right, channel: right/path}
-  posture_rate_right: {task_space: right, channel: right/path_rate}
-  posture_left: {task_space: left, channel: left/path}
-  posture_rate_left: {task_space: left, channel: left/path_rate}
+inputs:                         # each input's task space is the stage's that reads it
+  posture_right: {channel: right/path}
+  posture_rate_right: {channel: right/path_rate}
+  posture_left: {channel: left/path}
+  posture_rate_left: {channel: left/path_rate}
 
 controllers:
   follow_paths:                 # joint-position control of both arms: each tracks its own joint path (posture), driven by position
@@ -111,7 +111,7 @@ behaviours:
           - invert: {post: track_both.goal}
 
 start: follow_paths
-knots: {posture_right: 400, posture_rate_right: 400, posture_left: 400, posture_rate_left: 400}   # the most knots one trajectory on an input may carry
+knots: {posture_right: 400, posture_left: 400}   # the most knots one path may carry; each rate input takes its path's
 
 loop: {period: 0.004, health_period: 0.5}
 
