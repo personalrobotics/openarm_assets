@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: MPL-2.0
 #
 # node.yaml with the reach planner for each arm: a pose goes in on `<arm>/reach/trajectory`, and `reach_<arm>` plans the hand to it
-# (gafro's iLQR, seeded with a posture on the pose's self-motion charts) and publishes the path on the arm's path input. Playing it is
-# node.yaml's: `track_right`, `track_left`, or, after `reach_both`, `track_both`. `reach_failed` counts the poses no path reached.
+# (gafro's iLQR, seeded with a posture on the pose's self-motion charts), publishes the path on the arm's path input and follows it with
+# `follow_paths`; it succeeds when the path has ended, and the arm holds there. `reach_both` plans both and follows both. A pose no path
+# reaches fails the behaviour and counts in `reach_failed`. (A tree needs a leaf that runs a controller, so planning alone is not one.)
 # The plugin is libgafro_self_motion_charts_reach_task_nodes.so (lab/self-motion-charts, cpp/task_nodes): put its directory on GAFRO_PLUGIN_PATH.
 #
 #   gafro-robot-node --config configs/node_reach.yaml --transport local --run-for 10
@@ -14,7 +15,7 @@ extends: node.yaml
 
 task_nodes: [{name: self_motion_charts_reach}]
 
-events: [reach_failed]
+events: [track_both.start, track_both.tracking, track_both.goal, reach_failed]   # a list replaces the base's: node.yaml's events, and this file's
 
 inputs:
   reach_right: {task_space: right, channel: right/reach}
@@ -34,39 +35,50 @@ controllers:
         task_space: right
         input: pose
         objective: {pose: {target: reach_right}}
-        law: {pd: {gain: 5.0, max_speed: {linear: 0.2, angular: 0.8}}}
+        law: {pd: {gain: 5.0}}
         output: velocity
       - name: pose_left
         task_space: left
         input: pose
         objective: {pose: {target: reach_left}}
-        law: {pd: {gain: 5.0, max_speed: {linear: 0.2, angular: 0.8}}}
+        law: {pd: {gain: 5.0}}
         output: velocity
 
 behaviours:
-  reach_right:
-    reach: &reach_right
-      target: reach_right
-      to: posture_right
-      task_space: right
-      knots: 40
-      horizon: 4.0
-      failed: reach_failed
-      charts: {joints: [openarm_right_joint1, openarm_right_joint2, openarm_right_joint3, openarm_right_joint4, openarm_right_joint5, openarm_right_joint6, openarm_right_joint7], srs: {ee_offset_local: [9.999999999975306e-07, -0.004500000000000021, 0.18010000000000004], elbow_index: 3, forearm_home: [0.0, 0.031500916410469315, -0.21599986635482127], general_path: true, l_ew: 0.2182847910414283, l_se: 0.22224367257584637, r_post_wrist: [1.0, 0.0, 0.0, 0.0, -0.9999999999910005, 4.242642374076458e-06, 0.0, -4.242642374076458e-06, -0.9999999999910005], shoulder_pivot: [0.0, -0.15349999999889752, 0.6979994802763092], upper_home: [3.469446951953614e-18, -0.03149906661839416, -0.2200001336412548]}}
+  reach_right:                 # plan, then follow the path; succeed once it has ended
+    sequence:
+      - reach: &reach_right
+          target: reach_right
+          to: posture_right
+          task_space: right
+          knots: 40
+          horizon: 4.0
+          failed: reach_failed
+          charts: {joints: [openarm_right_joint1, openarm_right_joint2, openarm_right_joint3, openarm_right_joint4, openarm_right_joint5, openarm_right_joint6, openarm_right_joint7], srs: {ee_offset_local: [9.999999999975306e-07, -0.004500000000000021, 0.18010000000000004], elbow_index: 3, forearm_home: [0.0, 0.031500916410469315, -0.21599986635482127], general_path: true, l_ew: 0.2182847910414283, l_se: 0.22224367257584637, r_post_wrist: [1.0, 0.0, 0.0, 0.0, -0.9999999999910005, 4.242642374076458e-06, 0.0, -4.242642374076458e-06, -0.9999999999910005], shoulder_pivot: [0.0, -0.15349999999889752, 0.6979994802763092], upper_home: [3.469446951953614e-18, -0.03149906661839416, -0.2200001336412548]}}
+      - fallback:
+          - trajectory: {input: posture_right, is: ended}
+          - action: follow_paths
 
-  reach_left:
-    reach: &reach_left
-      target: reach_left
-      to: posture_left
-      task_space: left
-      knots: 40
-      horizon: 4.0
-      failed: reach_failed
-      charts: {joints: [openarm_left_joint1, openarm_left_joint2, openarm_left_joint3, openarm_left_joint4, openarm_left_joint5, openarm_left_joint6, openarm_left_joint7], srs: {l_se: 0.22224367257584643, l_ew: 0.21828479104142826, ee_offset_local: [9.999999999975306e-07, -0.004500000000000028, 0.1801], shoulder_pivot: [0.0, 0.15349999999889752, 0.6979994802763092], r_post_wrist: [1.0, 0.0, 0.0, 0.0, -0.9999999999910005, -4.242642374076458e-06, 0.0, 4.242642374076458e-06, -0.9999999999910005], elbow_index: 3, upper_home: [3.469446951953614e-18, -0.03150093338103886, -0.2199998663547853], forearm_home: [0.0, 0.03149908358896365, -0.21600013364129078], general_path: true}}
+  reach_left:                 # plan, then follow the path; succeed once it has ended
+    sequence:
+      - reach: &reach_left
+          target: reach_left
+          to: posture_left
+          task_space: left
+          knots: 40
+          horizon: 4.0
+          failed: reach_failed
+          charts: {joints: [openarm_left_joint1, openarm_left_joint2, openarm_left_joint3, openarm_left_joint4, openarm_left_joint5, openarm_left_joint6, openarm_left_joint7], srs: {l_se: 0.22224367257584643, l_ew: 0.21828479104142826, ee_offset_local: [9.999999999975306e-07, -0.004500000000000028, 0.1801], shoulder_pivot: [0.0, 0.15349999999889752, 0.6979994802763092], r_post_wrist: [1.0, 0.0, 0.0, 0.0, -0.9999999999910005, -4.242642374076458e-06, 0.0, 4.242642374076458e-06, -0.9999999999910005], elbow_index: 3, upper_home: [3.469446951953614e-18, -0.03150093338103886, -0.2199998663547853], forearm_home: [0.0, 0.03149908358896365, -0.21600013364129078], general_path: true}}
+      - fallback:
+          - trajectory: {input: posture_left, is: ended}
+          - action: follow_paths
 
-  reach_both:                   # both plans, one after the other; then `track_both` plays them together
+  reach_both:                   # both plans, one after the other, then both paths followed together
     sequence:
       - reach: *reach_right
       - reach: *reach_left
+      - fallback:
+          - sequence: [{trajectory: {input: posture_right, is: ended}}, {trajectory: {input: posture_left, is: ended}}]
+          - action: follow_paths
 
 knots: {reach_right: 2, reach_left: 2}

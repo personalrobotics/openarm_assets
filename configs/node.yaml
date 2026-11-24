@@ -46,13 +46,13 @@ controllers:
         task_space: right
         input: joints
         objective: {posture: {target: posture_right}}
-        law: {pd: {gain: 20.0, max_speed: 0.5, feedforward: posture_rate_right}}
+        law: {pd: {gain: 20.0, feedforward: posture_rate_right}}
         output: velocity
       - name: posture_left
         task_space: left
         input: joints
         objective: {posture: {target: posture_left}}
-        law: {pd: {gain: 20.0, max_speed: 0.5, feedforward: posture_rate_left}}
+        law: {pd: {gain: 20.0, feedforward: posture_rate_left}}
         output: velocity
 
 events: [track_both.start, track_both.tracking, track_both.goal]
