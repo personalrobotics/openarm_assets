@@ -17,32 +17,9 @@ task_nodes: [{name: self_motion_charts_reach}]
 
 events: [track_both.start, track_both.tracking, track_both.goal, reach_failed]   # a list replaces the base's: node.yaml's events, and this file's
 
-inputs:
-  reach_right: {task_space: right, channel: right/reach}
-  reach_left: {task_space: left, channel: left/reach}
-
-controllers:
-  hold_poses:                   # declares the pose inputs `reach` reads; run on its own it holds each hand at its last reach target, by position
-    inputs: {reach_right: pose, reach_left: pose}
-    type: position
-    maximum_lead: 0.02
-    maximum_error: 0.15
-    offset_gain: 2.0
-    regularization: 0.05
-    limits: {joint_velocity: model}
-    stages:
-      - name: pose_right
-        task_space: right
-        input: pose
-        objective: {pose: {target: reach_right}}
-        law: {pd: {gain: 5.0}}
-        output: velocity
-      - name: pose_left
-        task_space: left
-        input: pose
-        objective: {pose: {target: reach_left}}
-        law: {pd: {gain: 5.0}}
-        output: velocity
+inputs:                         # the poses `reach` plans to; no controller tracks them, so each says what it carries
+  reach_right: {task_space: right, channel: right/reach, type: pose}
+  reach_left: {task_space: left, channel: left/reach, type: pose}
 
 behaviours:
   reach_right:                 # plan, then follow the path; succeed once it has ended
