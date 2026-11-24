@@ -7,7 +7,7 @@
 # reaches fails the behaviour and counts in `reach_failed`. (A tree needs a leaf that runs a controller, so planning alone is not one.)
 # The plugin is libgafro_self_motion_charts_reach_task_nodes.so (lab/self-motion-charts, cpp/task_nodes): put its directory on GAFRO_PLUGIN_PATH.
 #
-#   gafro-robot-node --config configs/node_reach.yaml --transport local --run-for 10
+#   gafro-robot-node --config src/openarm_assets/configs/node_reach.yaml --transport local --run-for 10
 #
 # `charts` is what ssik derives for each arm, in Python (python cpp/task_nodes/srs_constants.py MODEL <arm>, in self-motion-charts); it
 # follows the model.
