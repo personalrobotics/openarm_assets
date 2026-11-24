@@ -2,6 +2,7 @@
 """Robot assembly utilities for building OpenArm configurations."""
 
 import argparse
+import math
 import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -41,7 +42,14 @@ _OUT_PATHS: dict[str, Path] = {
     "bimanual": _GENERATED_DIR / "openarm_bimanual_decorated.xml",
     "left": _GENERATED_DIR / "openarm_left_decorated.xml",
     "right": _GENERATED_DIR / "openarm_right_decorated.xml",
+    "bimanual_head_cap": _GENERATED_DIR / "openarm_bimanual_head_cap.xml",
 }
+
+# Joint 2's outward limit for an arm mounted beside a head (opendubs): contact with the head is at 180 deg with the elbow folded and the neck
+# centred, measured on the robot, and a show leaves 25 deg, so the arm is not driven past 155 deg. It is in the model, not only in a driver's
+# config: gafro's joint-limit guard and the driver both read each joint's limits from the model. The left arm is mirrored: the cap is its
+# lower bound.
+HEAD_CAP = math.radians(180.0 - 25.0)
 
 _SIDES = {
     "left": {
@@ -292,6 +300,17 @@ def narrow_joint_ranges(spec: mujoco.MjSpec, ranges: dict[str, tuple[float, floa
         joint.range = [lower, upper]
 
 
+def head_cap_ranges(src: Path | str = _DEFAULT_SRC) -> dict[str, tuple[float, float]]:
+    """Joint 2 of both arms narrowed on the outward side to HEAD_CAP: an upper bound on the right, a lower one on the left."""
+    base = build_openarm(src)
+    right = base.joint("openarm_right_joint2").range
+    left = base.joint("openarm_left_joint2").range
+    return {
+        "openarm_right_joint2": (float(right[0]), min(float(right[1]), HEAD_CAP)),
+        "openarm_left_joint2": (max(float(left[0]), -HEAD_CAP), float(left[1])),
+    }
+
+
 def add_finger_exclude(spec: mujoco.MjSpec, left_finger: str, right_finger: str) -> None:
     """Exclude finger-finger self-collision at the closed position."""
     exclude = spec.add_exclude()
@@ -466,6 +485,10 @@ def main() -> None:
        help="Narrow a joint's range, radians (repeatable): a robot's own limit, for what is around the arm. Never wider than the arm's.",
    )
    parser.add_argument(
+       "--head-cap", action="store_true",
+       help="Both arms, with joint 2 capped by a head beside them (HEAD_CAP); written to generated/openarm_bimanual_head_cap.xml.",
+   )
+   parser.add_argument(
        "--ready", action="append", default=[], metavar="NAME=VALUE",
        help="The robot's own ready pose, radians, one joint per flag (repeatable); the others are at 0. Inside the joint's range.",
    )
@@ -491,6 +514,10 @@ def main() -> None:
        lower, _, upper = bounds.partition(",")
        ranges[name] = (float(lower), float(upper))
    ready = {item.partition("=")[0]: float(item.partition("=")[2]) for item in args.ready} or None
+   if args.head_cap:
+       if args.sides != "bimanual":
+           parser.error("--head-cap is a bimanual model")
+       ranges = {**head_cap_ranges(args.src), **ranges}
    spec = build_openarm(args.src, sides=sides, gravcomp=args.gravcomp, joint_ranges=ranges, ready=ready, collision_cover=not args.no_collision_cover,
                          collision_options={"span": args.collision_span})
  
@@ -498,7 +525,7 @@ def main() -> None:
    model = spec.compile()
    print(f"Compiled OK — {model.nq} qpos, {model.nu} actuators")
  
-   out = args.out or _OUT_PATHS[args.sides]
+   out = args.out or _OUT_PATHS["bimanual_head_cap" if args.head_cap else args.sides]
    out.parent.mkdir(parents=True, exist_ok=True)
    out.write_text(to_xml(spec))
    print(f"Wrote {out}")
