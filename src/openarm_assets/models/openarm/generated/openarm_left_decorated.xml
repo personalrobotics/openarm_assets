@@ -389,6 +389,8 @@
     <text name="gafro_kinematic_chain:openarm_left_hand_tcp" data="openarm_left_hand_tcp;"/>
     <text name="gafro_control_group:left_arm" data="joint: openarm_left_joint1 openarm_left_joint2 openarm_left_joint3 openarm_left_joint4 openarm_left_joint5 openarm_left_joint6 openarm_left_joint7"/>
     <text name="gafro_task_space:left" data="openarm_left_hand_tcp;left_arm"/>
+    <text name="gafro_control_group:left_hand" data="joint: openarm_left_finger_joint1 openarm_left_finger_joint2"/>
+    <text name="gafro_task_space:left_hand" data=";left_hand"/>
     <text name="gafro_kinematic_chain:openarm_body_link0" data="openarm_body_link0;"/>
     <text name="gafro_kinematic_chain:openarm_left_link1" data="openarm_left_link1;"/>
     <text name="gafro_kinematic_chain:openarm_left_link2" data="openarm_left_link2;"/>

@@ -1,0 +1,77 @@
+# SPDX-FileCopyrightText: 2026 Tobias Loew <tobias.loew@gafro.ch>
+# SPDX-License-Identifier: MPL-2.0
+#
+# node.yaml with the hands: each hand is a control group of its two finger joints (the model couples them), commanded like an arm, by a
+# joint path. The controller runs over `arms_and_hands`, the model's task space of all four groups, and `follow_paths` has a posture
+# stage per hand beside the arms'. A hand that is sent nothing holds where its last path ended, as an arm does.
+#
+#   right hand:   a path on `right/hand/trajectory` (finger positions, m: 0 closed, 0.044 open), then `track_right_hand`
+#   left hand:    the same on `left/hand/trajectory`, then `track_left_hand`
+#   everything:   a path on each of the four, then `track_all` (all start, run and arrive under the same checks)
+#
+# Simulation only for now: the hardware backend needs a driver for every group that commands joints, and openarm-driver serves the arm
+# alone, so the head-cap model the arms run on names no hand.
+#
+#   gafro-robot-node --config src/openarm_assets/configs/node_hands.yaml --transport local --run-for 10
+extends: node.yaml
+
+robot:
+  task_space: arms_and_hands    # both arms and both hands: the controller's
+
+task_spaces:                    # the hands' task spaces: no frame, so no pose goes out
+  right_hand: {}
+  left_hand: {}
+
+inputs:
+  posture_right_hand: {channel: right/hand}
+  posture_left_hand: {channel: left/hand}
+
+controllers:
+  follow_paths:                 # node.yaml's, with a posture stage per hand (a list replaces the one it extends, so all four are here)
+    inputs:
+      posture_right: joints
+      posture_rate_right: joint_rates
+      posture_left: joints
+      posture_rate_left: joint_rates
+      posture_right_hand: joints
+      posture_left_hand: joints
+    stages:
+      - name: posture_right
+        task_space: right
+        input: joints
+        objective: {posture: {target: posture_right}}
+        law: {pd: {gain: 20.0, feedforward: posture_rate_right}}
+        output: velocity
+      - name: posture_left
+        task_space: left
+        input: joints
+        objective: {posture: {target: posture_left}}
+        law: {pd: {gain: 20.0, feedforward: posture_rate_left}}
+        output: velocity
+      - name: posture_right_hand
+        task_space: right_hand
+        input: joints
+        objective: {posture: {target: posture_right_hand}}
+        law: {pd: {gain: 20.0}}
+        output: velocity
+      - name: posture_left_hand
+        task_space: left_hand
+        input: joints
+        objective: {posture: {target: posture_left_hand}}
+        law: {pd: {gain: 20.0}}
+        output: velocity
+
+behaviours:
+  track_right_hand:
+    template: track_trajectory
+    with: {controller: follow_paths, input: posture_right_hand}
+
+  track_left_hand:
+    template: track_trajectory
+    with: {controller: follow_paths, input: posture_left_hand}
+
+  track_all:                    # both arms' and both hands' paths together, under the same checks
+    template: track_trajectory
+    with: {controller: follow_paths, input: [posture_right, posture_left, posture_right_hand, posture_left_hand]}
+
+knots: {posture_right_hand: 400, posture_left_hand: 400}
