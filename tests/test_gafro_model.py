@@ -52,9 +52,22 @@ def _configurations(pair):
 def test_groups_and_task_spaces(pair):
     system = pair["system"]
 
-    assert [g.get_name() for g in system.get_control_groups()] == ["left_arm", "right_arm"]
-    assert system.get_task_space_names() == [*SIDES, "bimanual"]
+    assert [g.get_name() for g in system.get_control_groups()] == ["left_arm", "left_hand", "right_arm", "right_hand"]
+    assert system.get_task_space_names() == ["left", "left_hand", "right", "right_hand", "bimanual", "arms_and_hands"]
     assert len(system.get_task_space("bimanual").get_joint_indices()) == 14
+    assert len(system.get_task_space("arms_and_hands").get_joint_indices()) == 18
+
+
+@pytest.mark.parametrize("side", SIDES)
+def test_a_hand_is_its_finger_joints(pair, side):
+    """A hand is a control group of its two finger joints, with a task space of that group alone: no chain, no frame."""
+    system = pair["system"]
+    hand = system.get_task_space(f"{side}_hand")
+    names = [system.get_actuators()[i].joint_name for i in hand.get_joint_indices()]
+
+    assert isinstance(hand, gafro.JointTaskSpace)
+    assert hand.get_number_of_chains() == 0
+    assert sorted(names) == [f"openarm_{side}_finger_joint1", f"openarm_{side}_finger_joint2"]
 
 
 @pytest.mark.parametrize("side", SIDES)

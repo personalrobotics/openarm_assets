@@ -116,14 +116,20 @@ def add_gravcomp(spec: mujoco.MjSpec, root_body: str) -> int:
         stack.extend(body.bodies)
     return count
 
-def add_gafro_annotations(spec: mujoco.MjSpec, sides: tuple[Side, ...]) -> None:
+def add_gafro_annotations(spec: mujoco.MjSpec, sides: tuple[Side, ...], hands: bool = True) -> None:
     """Name each arm's kinematic chain and task space for gafro's MJCF parser.
 
     gafro reads these from `<custom><text>` entries (see gafro's MJCFParser): a chain is named by its
     tip body (gafro looks the tip up by that name), a task space by the chains it spans. The tip is the hand TCP body, the same frame
     `add_ee_site` puts `openarm_<side>_ee_site` on, so the task space is the MuJoCo tool frame and not
     the URDFs' `hand_tcp` (see `opendubs/notes/design/arm-kinematic-models.md`). Each arm's seven joints are one
-    control group, which the task space names. With both arms there is also a `bimanual` task space spanning both.
+    control group, which the task space names. Each hand's two finger joints are a control group of their own, with a task space of
+    that group alone (no chain: the fingers are two branches of the hand, which no chain covers). With both arms there is also a
+    `bimanual` task space spanning both arms, and `arms_and_hands`, both arms and both hands, for a controller over all four.
+
+    `hands=False` leaves the hands' groups and task spaces out: a robot on hardware needs a driver for every group that commands
+    joints (gafro-robot-interface's HardwareBackend refuses one without), and until openarm-driver serves the hand, the
+    head-cap model the arms run on is arms only.
     """
     for side_name in sides:
         side = _SIDES[side_name]
@@ -131,11 +137,18 @@ def add_gafro_annotations(spec: mujoco.MjSpec, sides: tuple[Side, ...]) -> None:
         chain = side["tcp_body"]
         spec.add_text(name=f"gafro_kinematic_chain:{chain}", data=f"{chain};")
         # One control group per arm: the seven arm joints, which is what one CAN bus and one driver
-        # command. The gripper is not in it; it is commanded as a gripper, not as a joint group.
+        # command. The hand is a group of its own, commanded like any other: its finger joints, whose model
+        # couples them (the equality), so a path moves both the same.
         group = f"{side_name}_arm"
         joints = " ".join(f"openarm_{side_name}_joint{j}" for j in range(1, 8))
         spec.add_text(name=f"gafro_control_group:{group}", data=f"joint: {joints}")
         spec.add_text(name=f"gafro_task_space:{side_name}", data=f"{chain};{group}")
+        if not hands:
+            continue
+        hand = f"{side_name}_hand"
+        fingers = " ".join(f"openarm_{side_name}_finger_joint{j}" for j in (1, 2))
+        spec.add_text(name=f"gafro_control_group:{hand}", data=f"joint: {fingers}")
+        spec.add_text(name=f"gafro_task_space:{hand}", data=f";{hand}")
 
     # Both arms as one task space, for a controller over both at once: a RobotInterface runs one controller, and a stage binds to one task
     # space, so moving both arms together (engaging them from stow) needs a task space that is both.
@@ -143,6 +156,9 @@ def add_gafro_annotations(spec: mujoco.MjSpec, sides: tuple[Side, ...]) -> None:
         chains = " ".join(_SIDES[side_name]["tcp_body"] for side_name in sides)
         groups = " ".join(f"{side_name}_arm" for side_name in sides)
         spec.add_text(name="gafro_task_space:bimanual", data=f"{chains};{groups}")
+        if hands:
+            everything = " ".join(f"{side_name}_{part}" for side_name in sides for part in ("arm", "hand"))
+            spec.add_text(name="gafro_task_space:arms_and_hands", data=f";{everything}")
 
 
 def add_collision_cover(spec: mujoco.MjSpec, **options) -> covers.Cover:
@@ -412,6 +428,7 @@ def build_openarm(
         collision_cover: bool = True,
         collision_options: dict | None = None,
         velocity_limit: float | None = None,
+        hands: bool = True,
 ) -> mujoco.MjSpec:
     """Load the OpenArm scene and apply all decorations.
 
@@ -423,7 +440,8 @@ def build_openarm(
 
     `joint_ranges` narrows named joints' ranges for a robot (see `narrow_joint_ranges`); `velocity_limit` caps every arm joint's velocity limit
     (rad/s; see `add_arm_actuators`, and DRIVER_VELOCITY_LIMIT for a model openarm-driver runs); `ready` is the robot's own ready pose
-    (joint name -> angle, the others at 0), in place of the arm's nearly straight one (see `add_ready_keyframe`).
+    (joint name -> angle, the others at 0), in place of the arm's nearly straight one (see `add_ready_keyframe`). `hands` names the
+    hands' control groups and task spaces for gafro (see `add_gafro_annotations`).
 
     `collision_cover` writes the ball cover and its pairs for gafro's self-collision objective (see `add_collision_cover`);
     it is derived from the model as decorated here, so it follows `joint_ranges` and `ready`. `collision_options` are
@@ -454,7 +472,7 @@ def build_openarm(
     for side_name in _SIDES:
         add_arm_actuators(spec, side_name, velocity_limit=velocity_limit)
     add_ready_keyframe(spec, [s["joint4"] for s in _SIDES.values()], pose=ready)
-    add_gafro_annotations(spec, sides)
+    add_gafro_annotations(spec, sides, hands=hands)
     if collision_cover:
         add_collision_cover(spec, **(collision_options or {}))
 
@@ -537,7 +555,8 @@ def main() -> None:
        if args.velocity_limit is None:
            args.velocity_limit = DRIVER_VELOCITY_LIMIT
    spec = build_openarm(args.src, sides=sides, gravcomp=args.gravcomp, joint_ranges=ranges, ready=ready, collision_cover=not args.no_collision_cover,
-                         collision_options={"span": args.collision_span}, velocity_limit=args.velocity_limit)
+                         collision_options={"span": args.collision_span}, velocity_limit=args.velocity_limit,
+                         hands=not args.head_cap)
  
    # Sanity check: does it actually compile?
    model = spec.compile()

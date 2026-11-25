@@ -31,9 +31,19 @@ def test_the_committed_head_cap_model_is_what_the_generator_builds():
     from openarm_assets.assembly import DRIVER_VELOCITY_LIMIT, build_openarm, head_cap_ranges
 
     # The velocity actuators' command ranges are the joints' velocity limits: capped at what the driver runs.
-    spec = build_openarm(joint_ranges=head_cap_ranges(), velocity_limit=DRIVER_VELOCITY_LIMIT)
+    spec = build_openarm(joint_ranges=head_cap_ranges(), velocity_limit=DRIVER_VELOCITY_LIMIT, hands=False)
     built = spec.compile()
     committed = mujoco.MjModel.from_xml_path(str(HEAD_CAP_MODEL))
     assert np.allclose(built.jnt_range, committed.jnt_range, atol=1e-5)
     assert np.allclose(built.actuator_ctrlrange, committed.actuator_ctrlrange, atol=1e-5)
     assert built.nkey == committed.nkey and np.allclose(built.key_qpos, committed.key_qpos)
+
+
+def test_the_head_cap_model_names_no_hand():
+    """The arms run the head-cap model on hardware, which needs a driver for every group that commands joints; no driver serves the hand yet."""
+    committed = mujoco.MjModel.from_xml_path(str(HEAD_CAP_MODEL))
+    texts = [mujoco.mj_id2name(committed, mujoco.mjtObj.mjOBJ_TEXT, i) for i in range(committed.ntext)]
+
+    assert "gafro_control_group:left_arm" in texts
+    assert not [name for name in texts if name.endswith("_hand") and name.startswith("gafro_control_group:")]
+    assert "gafro_task_space:arms_and_hands" not in texts
