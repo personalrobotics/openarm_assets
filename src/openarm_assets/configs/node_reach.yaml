@@ -1,14 +1,14 @@
 # SPDX-FileCopyrightText: 2026 Tobias Loew <tobias.loew@gafro.ch>
 # SPDX-License-Identifier: MPL-2.0
 #
-# node.yaml with the reach planner for each arm: a pose goes in on `<arm>/reach/trajectory`, and `reach_<arm>` plans the hand to it
+# node_hands.yaml (both arms and both hands, follow_paths over arms_and_hands) with the reach planner for each arm: a pose goes in on `<arm>/reach/trajectory`, and `reach_<arm>` plans the hand to it
 # (gafro's iLQR, seeded with a posture on the pose's self-motion charts), publishes the path on the arm's path input and follows it with
 # `follow_paths`; it succeeds when the path has ended, and the arm holds there. `reach_both` plans both and follows both. A pose no path
 # reaches fails the behaviour and counts in `reach_failed`. (A tree needs a leaf that runs a controller, so planning alone is not one.)
 # The plugin is libgafro_self_motion_charts_reach_task_nodes.so (lab/self-motion-charts, cpp/task_nodes): put its directory on GAFRO_PLUGIN_PATH.
 #
 #   gafro-robot-node --config src/openarm_assets/configs/node_reach.yaml --transport local --run-for 10
-extends: node.yaml
+extends: node_hands.yaml
 
 task_nodes: [{name: self_motion_charts_reach}]
 

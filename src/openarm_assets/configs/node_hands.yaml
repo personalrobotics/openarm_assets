@@ -9,8 +9,7 @@
 #   left hand:    the same on `left/hand/trajectory`, then `track_left_hand`
 #   everything:   a path on each of the four, then `track_all` (all start, run and arrive under the same checks)
 #
-# Simulation only for now: the hardware backend needs a driver for every group that commands joints, and openarm-driver serves the arm
-# alone, so the head-cap model the arms run on names no hand.
+# On hardware each hand needs its driver: an `openarm_hand` entry beside its arm's in the hardware config (openarm-driver).
 #
 #   gafro-robot-node --config src/openarm_assets/configs/node_hands.yaml --transport local --run-for 10
 extends: node.yaml

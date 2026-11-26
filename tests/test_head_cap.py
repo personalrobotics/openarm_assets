@@ -31,7 +31,7 @@ def test_the_committed_head_cap_model_is_what_the_generator_builds():
     from openarm_assets.assembly import DRIVER_VELOCITY_LIMIT, build_openarm, head_cap_ranges
 
     # The velocity actuators' command ranges are the joints' velocity limits: capped at what the driver runs.
-    spec = build_openarm(joint_ranges=head_cap_ranges(), velocity_limit=DRIVER_VELOCITY_LIMIT, hands=False)
+    spec = build_openarm(joint_ranges=head_cap_ranges(), velocity_limit=DRIVER_VELOCITY_LIMIT)
     built = spec.compile()
     committed = mujoco.MjModel.from_xml_path(str(HEAD_CAP_MODEL))
     assert np.allclose(built.jnt_range, committed.jnt_range, atol=1e-5)
@@ -39,11 +39,9 @@ def test_the_committed_head_cap_model_is_what_the_generator_builds():
     assert built.nkey == committed.nkey and np.allclose(built.key_qpos, committed.key_qpos)
 
 
-def test_the_head_cap_model_names_no_hand():
-    """The arms run the head-cap model on hardware, which needs a driver for every group that commands joints; no driver serves the hand yet."""
+def test_the_head_cap_model_names_the_hands():
+    """The arms run the head-cap model on hardware, the hands too: each a control group openarm-driver's `openarm_hand` drives."""
     committed = mujoco.MjModel.from_xml_path(str(HEAD_CAP_MODEL))
-    texts = [mujoco.mj_id2name(committed, mujoco.mjtObj.mjOBJ_TEXT, i) for i in range(committed.ntext)]
+    texts = {mujoco.mj_id2name(committed, mujoco.mjtObj.mjOBJ_TEXT, i) for i in range(committed.ntext)}
 
-    assert "gafro_control_group:left_arm" in texts
-    assert not [name for name in texts if name.endswith("_hand") and name.startswith("gafro_control_group:")]
-    assert "gafro_task_space:arms_and_hands" not in texts
+    assert {"gafro_control_group:left_hand", "gafro_control_group:right_hand", "gafro_task_space:arms_and_hands"} <= texts
