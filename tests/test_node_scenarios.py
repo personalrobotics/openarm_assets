@@ -16,7 +16,8 @@ pytest.importorskip("gafro.control")
 
 from openarm_assets import MODELS_DIR  # noqa: E402
 
-CONFIGS = pathlib.Path(__file__).resolve().parents[1] / "src" / "openarm_assets" / "configs"
+# The package's configs, where they are installed (or src/ in a checkout): a release check tests the files that shipped.
+CONFIGS = pathlib.Path(MODELS_DIR).parent / "configs"
 MODEL = MODELS_DIR / "openarm" / "generated" / "openarm_bimanual_decorated.xml"
 STEP = np.array(
     [0.3, 0.2, -0.2, 0.3, 0.2, 0.2, 0.3]
